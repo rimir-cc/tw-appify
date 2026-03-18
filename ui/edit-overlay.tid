@@ -1,0 +1,46 @@
+title: $:/plugins/rimir/appify/ui/edit-overlay
+type: text/vnd.tiddlywiki
+
+\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!is[draft]] [all[shadows+tiddlers]tag[$:/tags/Global]!is[draft]]
+
+<$let
+  editStateTitle={{{ [[$:/state/rimir/appify/edit-target/]addsuffix<app>] }}}
+  draftTitle={{{ [<editStateTitle>get[text]] }}}
+>
+<div class="appify-edit-backdrop">
+<div class="appify-edit-overlay">
+<div class="appify-edit-overlay-header">
+<span class="appify-edit-overlay-title"><$text text={{{ [<draftTitle>get[draft.of]] }}}/></span>
+<span class="appify-edit-overlay-actions">
+<$button class="appify-edit-overlay-btn appify-edit-overlay-btn-save">
+<$action-appify-edit app=<<app>> operation="save"/>
+Save &amp; Close</$button>
+<$button class="appify-edit-overlay-btn appify-edit-overlay-btn-cancel">
+<$action-appify-edit app=<<app>> operation="cancel"/>
+Cancel</$button>
+</span>
+</div>
+<div class="appify-edit-overlay-content">
+<$vars
+  tv-config-toolbar-icons={{$:/config/Toolbar/Icons}}
+  tv-config-toolbar-text={{$:/config/Toolbar/Text}}
+  tv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}}
+  tv-enable-drag-and-drop={{$:/config/DragAndDrop/Enable}}
+  tv-show-missing-links={{$:/config/MissingLinks}}
+  storyviewTitle={{$:/view}}
+  languageTitle={{{ [{$:/language}get[name]] }}}
+>
+<$navigator story="$:/StoryList" history="$:/HistoryList"
+  openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}}
+  openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}}
+  relinkOnRename={{$:/config/RelinkOnRename}}
+>
+<$tiddler tiddler=<<draftTitle>>>
+<$transclude $tiddler="$:/core/ui/EditTemplate"/>
+</$tiddler>
+</$navigator>
+</$vars>
+</div>
+</div>
+</div>
+</$let>

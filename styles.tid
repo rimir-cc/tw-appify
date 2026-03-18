@@ -473,6 +473,17 @@ type: text/vnd.tiddlywiki
     width: 100%;
 }
 
+/* Hide title editor and draft info — title is read-only in appify */
+.appify-edit-overlay-content .tc-tiddler-frame .tc-titlebar,
+.appify-edit-overlay-content .tc-tiddler-frame .tc-tiddler-title {
+    display: none;
+}
+
+/* Hide TW's own controls (delete/cancel/save) — appify has its own in the overlay header */
+.appify-edit-overlay-content .tc-tiddler-frame .tc-tiddler-controls {
+    display: none;
+}
+
 /* Prevent iframe/textarea from overflowing the overlay */
 .appify-edit-overlay-content iframe,
 .appify-edit-overlay-content textarea {
