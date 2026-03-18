@@ -1,11 +1,10 @@
 created: 20260317120000000
 modified: 20260317120000000
-tags: $:/tags/PageTemplate
 title: $:/plugins/rimir/appify/ui/fab
 type: text/vnd.tiddlywiki
 
+\whitespace trim
 <div class="appify-fab-container">
-
 <$reveal type="match" state="$:/state/rimir/appify/fab-open" text="yes" tag="div" class="appify-fab-popup">
 <$button class="appify-fab-item">
 <$action-setfield $tiddler="$:/state/rimir/appify/active-app" text=""/>
@@ -22,7 +21,6 @@ Wiki (default)
 </$button>
 </$list>
 </$reveal>
-
 <$button class="appify-fab-btn">
 <$action-setfield $tiddler="$:/state/rimir/appify/fab-open" text={{{[[$:/state/rimir/appify/fab-open]get[text]match[yes]then[]else[yes]]}}}/>
 <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
@@ -32,5 +30,4 @@ Wiki (default)
 <rect x="11" y="11" width="8" height="8" rx="1.5"/>
 </svg>
 </$button>
-
 </div>

@@ -3,8 +3,10 @@ title: $:/plugins/rimir/appify/modules/startup/keyboard.js
 type: application/javascript
 module-type: startup
 
-Handles Ctrl+M keyboard shortcut for toggling edit mode.
-Only activates when an app is currently active.
+Core appify startup:
+- Renders FAB on document.body (visible in wiki mode; app mode includes FAB via layout)
+- Switches $:/layout to swap between TW's default page and the app layout
+- Manages Ctrl+M shortcut for edit mode
 
 \*/
 (function(){
@@ -13,20 +15,67 @@ Only activates when an app is currently active.
 
 exports.name = "appify-keyboard";
 exports.platforms = ["browser"];
-exports.after = ["startup"];
+exports.after = ["render"];
+
+var STATE_TIDDLER = "$:/state/rimir/appify/active-app";
+var EDIT_MODE_TIDDLER = "$:/state/rimir/appify/edit-mode";
+var LAYOUT_TIDDLER = "$:/layout";
+var APP_LAYOUT = "$:/plugins/rimir/appify/ui/app-layout";
 
 exports.startup = function() {
+	// --- FAB for wiki mode: render on body ---
+	var fabContainer = document.createElement("div");
+	fabContainer.className = "appify-fab-wrapper";
+	document.body.appendChild(fabContainer);
+
+	var fabParser = $tw.wiki.parseTiddler("$:/plugins/rimir/appify/ui/fab");
+	var fabWidget = $tw.wiki.makeWidget(fabParser, {
+		document: document,
+		parentWidget: $tw.rootWidget
+	});
+	fabWidget.render(fabContainer, null);
+
+	var currentAppTitle = "";
+
+	function updateLayout() {
+		var activeApp = $tw.wiki.getTiddlerText(STATE_TIDDLER, "");
+		currentAppTitle = activeApp;
+
+		if(activeApp) {
+			$tw.wiki.setText(LAYOUT_TIDDLER, "text", null, APP_LAYOUT);
+			fabContainer.style.display = "none";
+		} else {
+			// Always clear our layout (handles persisted state from previous session)
+			var currentLayout = $tw.wiki.getTiddlerText(LAYOUT_TIDDLER, "");
+			if(currentLayout === APP_LAYOUT) {
+				$tw.wiki.deleteTiddler(LAYOUT_TIDDLER);
+			}
+			fabContainer.style.display = "";
+		}
+	}
+
+	// --- Change listener ---
+	$tw.wiki.addEventListener("change", function(changes) {
+		if(changes[STATE_TIDDLER]) {
+			updateLayout();
+		}
+		fabWidget.refresh(changes);
+	});
+
+	// --- Ctrl+M keyboard shortcut ---
 	document.addEventListener("keydown", function(e) {
 		if(e.ctrlKey && !e.shiftKey && !e.altKey && e.key === "m") {
-			var activeApp = $tw.wiki.getTiddlerText("$:/state/rimir/appify/active-app", "");
-			if(activeApp) {
+			if(currentAppTitle) {
 				e.preventDefault();
-				var current = $tw.wiki.getTiddlerText("$:/state/rimir/appify/edit-mode", "no");
-				$tw.wiki.setText("$:/state/rimir/appify/edit-mode", "text", null,
+				var current = $tw.wiki.getTiddlerText(EDIT_MODE_TIDDLER, "no");
+				$tw.wiki.setText(EDIT_MODE_TIDDLER, "text", null,
 					current === "yes" ? "no" : "yes");
 			}
 		}
 	});
+
+	// --- Initial state ---
+	updateLayout();
 };
 
 })();

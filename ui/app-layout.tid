@@ -1,0 +1,5 @@
+title: $:/plugins/rimir/appify/ui/app-layout
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<div class="appify-overlay"><$appify-app tiddler={{{[[$:/state/rimir/appify/active-app]get[text]]}}}/></div><$transclude tiddler="$:/plugins/rimir/appify/ui/fab"/>
