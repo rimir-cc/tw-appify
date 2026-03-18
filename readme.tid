@@ -9,10 +9,12 @@ Transform TiddlyWiki into an app platform. Define full-viewport applications wit
 
 !! Features
 
-* ''App layouts'' — predefined grid templates (sidebar+main, topbar+sidebar+main, triple-column, dashboard) with named view slots
+* ''App layouts'' — predefined grid templates (sidebar+main, topbar+sidebar+main, triple-column, dashboard, focus) with named view slots
 * ''Statewrap integration'' — each app defines its own state channels and reactive rules
 * ''View binding'' — each slot transcludes a tiddler that reads/writes channels by name
 * ''Floating app switcher'' — always-visible FAB button to launch apps or return to the default wiki
+* ''Edit mode modals'' — channel editor (add/rename/delete channels, set defaults), rule editor (add/delete reactive rules), debug inspector (live state, layout switcher)
+* ''Layout switching'' — switch layouts from the debug inspector; configs (view bindings, splits, proportions) are saved per layout and restored when switching back
 * ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`
 
 !! Quick start
@@ -33,6 +35,14 @@ Transform TiddlyWiki into an app platform. Define full-viewport applications wit
 
 The tiddler's text body contains `<$statewrap-rule>` definitions for reactive rules.
 
+!! Edit mode (Ctrl+M)
+
+In edit mode, the debug bar shows live channel values and three buttons:
+
+* ''⚙ Channel editor'' — add, rename, delete channels and set default values
+* ''⇄ Rule editor'' — view and edit reactive rules (when channel X changes → set channel Y)
+* ''🔍 Debug inspector'' — app info, live state tiddler paths, layout switcher
+
 !! Built-in layouts
 
 |!Name |!Slots |!Description |
@@ -40,6 +50,9 @@ The tiddler's text body contains `<$statewrap-rule>` definitions for reactive ru
 |`topbar-sidebar-main` |topbar, sidebar, main |Top bar + left sidebar + main content |
 |`triple-column` |left, center, right |Three equal columns |
 |`dashboard` |topbar, left, right |Top bar + two equal panels |
+|`focus` |main |Single full-viewport pane |
+
+Layout configs (view bindings, splits, proportions) are saved per layout and automatically restored when switching back.
 
 !! Prerequisites
 

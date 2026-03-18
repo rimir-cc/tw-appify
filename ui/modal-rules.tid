@@ -1,0 +1,102 @@
+title: $:/plugins/rimir/appify/ui/modal-rules
+subtitle: Rule Editor
+footer: <$button message="tm-close-tiddler">Close</$button>
+type: text/vnd.tiddlywiki
+
+\define rules-temp() $:/temp/rimir/appify/rules/$(app)$
+\define add-when-input() $:/temp/rimir/appify/rule-editor/$(app)$/add-when
+\define add-channel-input() $:/temp/rimir/appify/rule-editor/$(app)$/add-channel
+\define add-value-input() $:/temp/rimir/appify/rule-editor/$(app)$/add-value
+
+<!-- app variable is set by tm-modal params -->
+<!-- Rules are parsed into temp tiddler by the button that opens this modal -->
+
+<div class="appify-modal-section">
+
+!! Current Rules
+
+<$let rulesJson={{{ [<rules-temp>get[text]] }}}>
+<%if [<rulesJson>!is[blank]] %>
+
+<table class="appify-modal-table">
+<tr><th>When</th><th>Actions</th><th></th></tr>
+<$list filter="[<rules-temp>jsonindexes[]]" variable="ruleIdx">
+<$let
+  ruleWhen={{{ [<rules-temp>jsonget<ruleIdx>,[when]] }}}
+>
+<tr>
+<td class="appify-modal-cell-name"><<ruleWhen>></td>
+<td>
+<$list filter="[<rules-temp>jsonget<ruleIdx>,[actions]jsonindexes[]]" variable="actIdx">
+<$let
+  actChannel={{{ [<rules-temp>jsonget<ruleIdx>,[actions],<actIdx>,[channel]] }}}
+  actValue={{{ [<rules-temp>jsonget<ruleIdx>,[actions],<actIdx>,[value]] }}}
+>
+<div class="appify-modal-rule-action">set ''<<actChannel>>'' to "<<actValue>>"</div>
+</$let>
+</$list>
+</td>
+<td class="appify-modal-cell-actions">
+<$button class="appify-modal-btn appify-modal-btn-danger" tooltip="Delete rule">
+<$action-appify-rule app=<<app>> operation="delete-rule" when=<<ruleWhen>>/>
+&#10005;
+</$button>
+</td>
+</tr>
+</$let>
+</$list>
+</table>
+
+<%else%>
+<p class="appify-modal-empty">No rules defined.</p>
+<%endif%>
+
+</$let>
+
+</div>
+
+<div class="appify-modal-section">
+
+!! Add Rule Action
+
+<div class="appify-modal-row">
+<label>When</label>
+<$select tiddler=<<add-when-input>> field="text" class="appify-modal-input">
+<option value="">-- select channel --</option>
+<$list filter="[<app>get[appify-channels]enlist-input[]]" variable="ch">
+<option value=<<ch>>><<ch>></option>
+</$list>
+</$select>
+</div>
+
+<div class="appify-modal-row">
+<label>Set channel</label>
+<$select tiddler=<<add-channel-input>> field="text" class="appify-modal-input">
+<option value="">-- select channel --</option>
+<$list filter="[<app>get[appify-channels]enlist-input[]]" variable="ch">
+<option value=<<ch>>><<ch>></option>
+</$list>
+</$select>
+</div>
+
+<div class="appify-modal-row">
+<label>To value</label>
+<$edit-text tiddler=<<add-value-input>> field="text" tag="input" placeholder="Value (empty to clear)" class="appify-modal-input"/>
+</div>
+
+<$button class="appify-modal-btn appify-modal-btn-primary">
+<$action-appify-rule app=<<app>> operation="add-action" when={{{ [<add-when-input>get[text]] }}} channel={{{ [<add-channel-input>get[text]] }}} value={{{ [<add-value-input>get[text]] }}}/>
+<$action-deletetiddler $tiddler=<<add-when-input>>/>
+<$action-deletetiddler $tiddler=<<add-channel-input>>/>
+<$action-deletetiddler $tiddler=<<add-value-input>>/>
+Add Action
+</$button>
+
+</div>
+
+<hr/>
+
+<$button class="appify-modal-btn appify-modal-btn-primary">
+<$action-appify-rule app=<<app>> operation="apply"/>
+Apply Rules to App
+</$button>

@@ -1,0 +1,99 @@
+title: $:/plugins/rimir/appify/ui/modal-debug
+subtitle: Debug Inspector
+footer: <$button message="tm-close-tiddler">Close</$button>
+type: text/vnd.tiddlywiki
+
+<!-- app variable is set by tm-modal params -->
+
+<div class="appify-modal-section">
+
+!! App Info
+
+<table class="appify-modal-table">
+<tr><td>''Title''</td><td><<app>></td></tr>
+<tr><td>''Layout''</td><td>
+<$let currentLayout={{{ [<app>get[appify-layout]] }}}>
+<div class="appify-modal-layout-list">
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/rimir/appify/layout]sort[caption]]" variable="layout">
+<$let layoutName={{{ [<layout>removeprefix[$:/plugins/rimir/appify/layouts/]] }}}>
+<%if [<layoutName>match<currentLayout>] %>
+<span class="appify-modal-btn appify-modal-btn-active"><$text text={{{ [<layout>get[caption]] ~[<layoutName>] }}}/></span>
+<%else%>
+<$button class="appify-modal-btn">
+<$action-appify-layout app=<<app>> layout=<<layoutName>>/>
+<$text text={{{ [<layout>get[caption]] ~[<layoutName>] }}}/>
+</$button>
+<%endif%>
+</$let>
+</$list>
+</div>
+</$let>
+</td></tr>
+<tr><td>''Instance ID''</td><td><code><<app>></code></td></tr>
+</table>
+
+</div>
+
+<div class="appify-modal-section">
+
+!! Channel State
+
+<table class="appify-modal-table">
+<tr><th>Channel</th><th>State Tiddler</th><th>Current Value</th><th>Default</th></tr>
+<$list filter="[<app>get[appify-channels]enlist-input[]]" variable="ch">
+<$let
+  stateRef={{{ [[$:/state/rimir/statewrap/]addsuffix<app>addsuffix[/]addsuffix<ch>] }}}
+  defaultField={{{ [[appify-default-]addsuffix<ch>] }}}
+>
+<tr>
+<td class="appify-modal-cell-name"><<ch>></td>
+<td><code><$text text=<<stateRef>>/></code></td>
+<td>
+<$transclude $tiddler=<<stateRef>> $field="text">
+<em class="appify-debug-empty">(empty)</em>
+</$transclude>
+</td>
+<td>
+<$text text={{{ [<app>get<defaultField>] ~[[(none)]] }}}/>
+</td>
+</tr>
+</$let>
+</$list>
+</table>
+
+</div>
+
+<div class="appify-modal-section">
+
+!! Rules Summary
+
+<!-- Rules are parsed into temp tiddler by the button that opens this modal -->
+<$let rulesTemp={{{ [[$:/temp/rimir/appify/rules/]addsuffix<app>] }}}>
+<$let rulesJson={{{ [<rulesTemp>get[text]] }}}>
+
+<%if [<rulesJson>!is[blank]] %>
+<$list filter="[<rulesTemp>jsonindexes[]]" variable="ruleIdx">
+<$let ruleWhen={{{ [<rulesTemp>jsonget<ruleIdx>,[when]] }}}>
+<div class="appify-modal-rule-summary">
+When ''<<ruleWhen>>'' changes:
+<ul>
+<$list filter="[<rulesTemp>jsonget<ruleIdx>,[actions]jsonindexes[]]" variable="actIdx">
+<$let
+  actChannel={{{ [<rulesTemp>jsonget<ruleIdx>,[actions],<actIdx>,[channel]] }}}
+  actValue={{{ [<rulesTemp>jsonget<ruleIdx>,[actions],<actIdx>,[value]] }}}
+>
+<li>Set ''<<actChannel>>'' to <%if [<actValue>is[blank]] %><em>(empty)</em><%else%>"<<actValue>>"<%endif%></li>
+</$let>
+</$list>
+</ul>
+</div>
+</$let>
+</$list>
+<%else%>
+<p class="appify-modal-empty">No rules defined.</p>
+<%endif%>
+
+</$let>
+</$let>
+
+</div>

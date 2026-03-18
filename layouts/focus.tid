@@ -1,0 +1,10 @@
+created: 20260318120000000
+modified: 20260318120000000
+tags: $:/tags/rimir/appify/layout
+caption: Focus (Single Pane)
+appify-slots: main
+appify-grid-areas: "main"
+appify-grid-columns: 1fr
+appify-grid-rows: 1fr
+title: $:/plugins/rimir/appify/layouts/focus
+type: text/vnd.tiddlywiki

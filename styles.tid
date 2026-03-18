@@ -210,6 +210,180 @@ type: text/vnd.tiddlywiki
     font-style: italic;
 }
 
+/* === Debug bar action buttons === */
+
+.appify-debug-actions {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.appify-debug-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: <<colour foreground>>;
+    padding: 2px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.2;
+    transition: background 0.1s;
+}
+
+.appify-debug-btn:hover {
+    background: <<colour primary>>;
+    color: <<colour background>>;
+}
+
+/* === Modal content styles === */
+
+.appify-modal-section {
+    margin-bottom: 16px;
+}
+
+.appify-modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.appify-modal-table th {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 2px solid <<colour tiddler-border>>;
+    font-size: 12px;
+    color: <<colour muted-foreground>>;
+    text-transform: uppercase;
+}
+
+.appify-modal-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid <<colour tiddler-border>>;
+    vertical-align: middle;
+}
+
+.appify-modal-cell-name {
+    font-weight: bold;
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    color: <<colour primary>>;
+}
+
+.appify-modal-cell-default {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.appify-modal-cell-actions {
+    white-space: nowrap;
+}
+
+.appify-modal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.appify-modal-row label {
+    min-width: 80px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.appify-modal-input {
+    padding: 4px 8px;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 3px;
+    font-size: 13px;
+    background: <<colour tiddler-background>>;
+    color: <<colour foreground>>;
+    flex: 1;
+    min-width: 0;
+}
+
+.appify-modal-input-sm {
+    max-width: 120px;
+}
+
+.appify-modal-btn {
+    padding: 4px 10px;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 3px;
+    background: <<colour tiddler-background>>;
+    color: <<colour foreground>>;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.appify-modal-btn:hover {
+    background: <<colour tiddler-info-background>>;
+}
+
+.appify-modal-btn-primary {
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    border-color: <<colour primary>>;
+    font-weight: bold;
+}
+
+.appify-modal-btn-primary:hover {
+    opacity: 0.9;
+}
+
+.appify-modal-btn-sm {
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.appify-modal-btn-danger:hover {
+    background: rgba(255,80,80,0.6);
+    color: white;
+}
+
+.appify-modal-rule-action {
+    font-size: 13px;
+    padding: 2px 0;
+}
+
+.appify-modal-rule-summary {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: <<colour code-background>>;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.appify-modal-rule-summary ul {
+    margin: 4px 0;
+    padding-left: 20px;
+}
+
+.appify-modal-empty {
+    color: <<colour muted-foreground>>;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.appify-modal-layout-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.appify-modal-btn-active {
+    padding: 4px 10px;
+    border: 2px solid <<colour primary>>;
+    border-radius: 3px;
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 /* === Drag resize handles === */
 
 .appify-drag-handle {

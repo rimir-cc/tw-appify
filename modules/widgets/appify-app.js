@@ -147,51 +147,79 @@ AppifyAppWidget.prototype.execute = function() {
 
 	// Debug bar (edit mode only)
 	var preGridNodes = [];
-	if(editMode && channelNames.length > 0) {
-		var statePrefix = "$:/state/rimir/statewrap/" + appTitle + "/";
-		var debugItems = [];
-		for(var k = 0; k < channelNames.length; k++) {
-			var chName = channelNames[k];
-			if(k > 0) {
-				debugItems.push({
+	if(editMode) {
+		var debugBarChildren = [];
+
+		// Channel values (only if channels exist)
+		if(channelNames.length > 0) {
+			var statePrefix = "$:/state/rimir/statewrap/" + appTitle + "/";
+			debugBarChildren.push({
+				type: "element", tag: "span",
+				attributes: { "class": { type: "string", value: "appify-debug-title" } },
+				children: [{ type: "text", text: "Channels" }]
+			});
+			for(var k = 0; k < channelNames.length; k++) {
+				var chName = channelNames[k];
+				if(k > 0) {
+					debugBarChildren.push({
+						type: "element", tag: "span",
+						attributes: { "class": { type: "string", value: "appify-debug-sep" } },
+						children: [{ type: "text", text: "|" }]
+					});
+				}
+				debugBarChildren.push({
 					type: "element", tag: "span",
-					attributes: { "class": { type: "string", value: "appify-debug-sep" } },
-					children: [{ type: "text", text: "|" }]
+					attributes: { "class": { type: "string", value: "appify-debug-channel" } },
+					children: [
+						{ type: "element", tag: "span",
+						  attributes: { "class": { type: "string", value: "appify-debug-name" } },
+						  children: [{ type: "text", text: chName }] },
+						{ type: "text", text: " = " },
+						{ type: "element", tag: "span",
+						  attributes: { "class": { type: "string", value: "appify-debug-value" } },
+						  children: [{
+							type: "transclude",
+							attributes: {
+								"$tiddler": { type: "string", value: statePrefix + chName },
+								"$field": { type: "string", value: "text" }
+							},
+							children: [
+								{ type: "element", tag: "em",
+								  attributes: { "class": { type: "string", value: "appify-debug-empty" } },
+								  children: [{ type: "text", text: "(empty)" }] }
+							]
+						}] }
+					]
 				});
 			}
-			debugItems.push({
-				type: "element", tag: "span",
-				attributes: { "class": { type: "string", value: "appify-debug-channel" } },
-				children: [
-					{ type: "element", tag: "span",
-					  attributes: { "class": { type: "string", value: "appify-debug-name" } },
-					  children: [{ type: "text", text: chName }] },
-					{ type: "text", text: " = " },
-					{ type: "element", tag: "span",
-					  attributes: { "class": { type: "string", value: "appify-debug-value" } },
-					  children: [{
-						type: "transclude",
-						attributes: {
-							"$tiddler": { type: "string", value: statePrefix + chName },
-							"$field": { type: "string", value: "text" }
-						},
-						children: [
-							{ type: "element", tag: "em",
-							  attributes: { "class": { type: "string", value: "appify-debug-empty" } },
-							  children: [{ type: "text", text: "(empty)" }] }
-						]
-					}] }
-				]
-			});
 		}
+
+		// Modal trigger buttons (always shown in edit mode)
+		var esc = function(s) { return s.replace(/"/g, "&quot;"); };
+		var escApp = esc(appTitle);
+		var btnWt = '<span class="appify-debug-actions">' +
+			'<$button class="appify-debug-btn" tooltip="Channel editor">' +
+			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-channels" app="' + escApp + '"/>' +
+			'\u2699</$button>' +
+			'<$button class="appify-debug-btn" tooltip="Rule editor">' +
+			'<$action-appify-rule app="' + escApp + '" operation="parse"/>' +
+			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-rules" app="' + escApp + '"/>' +
+			'\u21C4</$button>' +
+			'<$button class="appify-debug-btn" tooltip="Debug inspector">' +
+			'<$action-appify-rule app="' + escApp + '" operation="parse"/>' +
+			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-debug" app="' + escApp + '"/>' +
+			'\uD83D\uDD0D</$button>' +
+			'</span>';
+
+		var btnParsed = this.wiki.parseText("text/vnd.tiddlywiki", btnWt, { parseAsInline: false });
+		if(btnParsed && btnParsed.tree) {
+			debugBarChildren = debugBarChildren.concat(btnParsed.tree);
+		}
+
 		preGridNodes.push({
 			type: "element", tag: "div",
 			attributes: { "class": { type: "string", value: "appify-debug-bar" } },
-			children: [
-				{ type: "element", tag: "span",
-				  attributes: { "class": { type: "string", value: "appify-debug-title" } },
-				  children: [{ type: "text", text: "Channels" }] }
-			].concat(debugItems)
+			children: debugBarChildren
 		});
 	}
 

@@ -1,0 +1,66 @@
+title: $:/plugins/rimir/appify/ui/modal-channels
+subtitle: Channel Editor
+footer: <$button message="tm-close-tiddler">Close</$button>
+type: text/vnd.tiddlywiki
+
+\define channel-state() $:/temp/rimir/appify/channel-editor/$(app)$
+\define new-channel-input() $(channel-state)$/new-name
+\define new-default-input() $(channel-state)$/new-default
+\define rename-input() $(channel-state)$/rename/$(ch)$
+\define default-input() $(channel-state)$/default/$(ch)$
+
+<!-- app variable is set by tm-modal params -->
+
+<div class="appify-modal-section">
+
+!! Channels
+
+<table class="appify-modal-table">
+<tr><th>Name</th><th>Default</th><th>Actions</th></tr>
+<$list filter="[<app>get[appify-channels]enlist-input[]]" variable="ch">
+<$let defaultField={{{ [[appify-default-]addsuffix<ch>] }}}>
+<tr>
+<td class="appify-modal-cell-name"><<ch>></td>
+<td class="appify-modal-cell-default">
+<$edit-text tiddler=<<default-input>> field="text" tag="input" placeholder="(none)" class="appify-modal-input appify-modal-input-sm" default={{{ [<app>get<defaultField>] }}}/>
+<$button class="appify-modal-btn appify-modal-btn-sm" tooltip="Save default">
+<$action-appify-channel app=<<app>> operation="set-default" channel=<<ch>> value={{{ [<default-input>get[text]] }}}/>
+<$action-deletetiddler $tiddler=<<default-input>>/>
+&#10003;
+</$button>
+</td>
+<td class="appify-modal-cell-actions">
+<$button class="appify-modal-btn" tooltip="Rename channel">
+<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-channel-rename" app=<<app>> channel=<<ch>>/>
+&#9998;
+</$button>
+<$button class="appify-modal-btn appify-modal-btn-danger" tooltip="Delete channel">
+<$action-appify-channel app=<<app>> operation="delete" channel=<<ch>>/>
+&#10005;
+</$button>
+</td>
+</tr>
+</$let>
+</$list>
+</table>
+
+</div>
+
+<div class="appify-modal-section">
+
+!! Add Channel
+
+<div class="appify-modal-row">
+<$edit-text tiddler=<<new-channel-input>> field="text" tag="input" placeholder="Channel name" class="appify-modal-input"/>
+<$edit-text tiddler=<<new-default-input>> field="text" tag="input" placeholder="Default (optional)" class="appify-modal-input"/>
+<$button class="appify-modal-btn appify-modal-btn-primary">
+<$action-appify-channel app=<<app>> operation="add" channel={{{ [<new-channel-input>get[text]] }}} value={{{ [<new-default-input>get[text]] }}}/>
+<$action-deletetiddler $tiddler=<<new-channel-input>>/>
+<$action-deletetiddler $tiddler=<<new-default-input>>/>
+Add
+</$button>
+</div>
+
+</div>
+
+<!-- end modal -->
