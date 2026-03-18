@@ -80,26 +80,83 @@ function setupDragHandles(gridEl) {
 	var rowSizes = parseSizes(computed.gridTemplateRows);
 	var gap = parseFloat(computed.gap) || parseFloat(computed.columnGap) || 1;
 
-	// Column handles (between each pair of columns)
+	// Parse grid-template-areas into 2D array for span detection
+	var areas = parseGridAreas(computed.gridTemplateAreas);
+
+	// Column handles — skip rows where an area spans across the column boundary
 	var cumWidth = 0;
 	for(var i = 0; i < colSizes.length - 1; i++) {
 		cumWidth += colSizes[i] + gap;
-		createHandle(gridEl, "col", i,
-			cumWidth - gap / 2 - HANDLE_WIDTH / 2, 0,
-			HANDLE_WIDTH, "100%");
+
+		// Find first row where areas differ across this column boundary
+		var handleTop = 0;
+		var skipHeight = 0;
+		if(areas.length > 0) {
+			for(var r = 0; r < areas.length; r++) {
+				if(areas[r][i] === areas[r][i + 1]) {
+					// Area spans across this boundary — skip this row
+					skipHeight += rowSizes[r] + (r < areas.length - 1 ? gap : 0);
+				} else {
+					break;
+				}
+			}
+			handleTop = skipHeight;
+		}
+
+		var handleHeight = gridEl.offsetHeight - handleTop;
+		if(handleHeight > 0) {
+			createHandle(gridEl, "col", i,
+				cumWidth - gap / 2 - HANDLE_WIDTH / 2, handleTop,
+				HANDLE_WIDTH, handleHeight);
+		}
 	}
 
-	// Row handles — skip if original template contains "auto"
-	var originalRows = gridEl.dataset.appifyOriginalRows || "";
-	if(originalRows.indexOf("auto") === -1 && rowSizes.length > 1) {
+	// Row handles — skip rows where BOTH sides are "auto" (can't resize auto↔auto)
+	var originalRows = (gridEl.dataset.appifyOriginalRows || "").split(/\s+/).filter(Boolean);
+	if(rowSizes.length > 1) {
 		var cumHeight = 0;
 		for(var j = 0; j < rowSizes.length - 1; j++) {
 			cumHeight += rowSizes[j] + gap;
-			createHandle(gridEl, "row", j,
-				0, cumHeight - gap / 2 - HANDLE_WIDTH / 2,
-				"100%", HANDLE_WIDTH);
+
+			// Skip only if BOTH adjacent rows are "auto"
+			var rowAbove = originalRows[j] || "";
+			var rowBelow = originalRows[j + 1] || "";
+			if(rowAbove === "auto" && rowBelow === "auto") continue;
+
+			// Find column range where a row boundary actually exists
+			var handleLeft = 0;
+			var skipWidth = 0;
+			if(areas.length > 1) {
+				for(var c = 0; c < colSizes.length; c++) {
+					if(areas[j] && areas[j + 1] && areas[j][c] === areas[j + 1][c]) {
+						// Area spans across this row boundary — skip this column
+						skipWidth += colSizes[c] + (c < colSizes.length - 1 ? gap : 0);
+					} else {
+						break;
+					}
+				}
+				handleLeft = skipWidth;
+			}
+
+			var handleWidth = gridEl.offsetWidth - handleLeft;
+			if(handleWidth > 0) {
+				createHandle(gridEl, "row", j,
+					handleLeft, cumHeight - gap / 2 - HANDLE_WIDTH / 2,
+					handleWidth, HANDLE_WIDTH);
+			}
 		}
 	}
+}
+
+function parseGridAreas(areasStr) {
+	if(!areasStr || areasStr === "none") return [];
+	var rows = [];
+	var matches = areasStr.match(/"([^"]+)"/g);
+	if(!matches) return [];
+	for(var i = 0; i < matches.length; i++) {
+		rows.push(matches[i].replace(/"/g, "").trim().split(/\s+/));
+	}
+	return rows;
 }
 
 function createHandle(gridEl, type, index, left, top, width, height) {
@@ -235,19 +292,58 @@ function repositionHandles(gridEl) {
 	var colSizes = parseSizes(computed.gridTemplateColumns);
 	var rowSizes = parseSizes(computed.gridTemplateRows);
 	var gap = parseFloat(computed.gap) || parseFloat(computed.columnGap) || 1;
+	var areas = parseGridAreas(computed.gridTemplateAreas);
 
 	var colHandles = gridEl.querySelectorAll(".appify-drag-handle-col");
 	var cumWidth = 0;
-	for(var i = 0; i < colHandles.length; i++) {
+	var colHandleIdx = 0;
+	for(var i = 0; i < colSizes.length - 1; i++) {
 		cumWidth += colSizes[i] + gap;
-		colHandles[i].style.left = (cumWidth - gap / 2 - HANDLE_WIDTH / 2) + "px";
+		if(colHandleIdx >= colHandles.length) break;
+		var handle = colHandles[colHandleIdx];
+		if(parseInt(handle.dataset.handleIndex, 10) !== i) continue;
+		handle.style.left = (cumWidth - gap / 2 - HANDLE_WIDTH / 2) + "px";
+
+		// Recalculate top offset for spanning areas
+		var skipHeight = 0;
+		if(areas.length > 0) {
+			for(var r = 0; r < areas.length; r++) {
+				if(areas[r][i] === areas[r][i + 1]) {
+					skipHeight += rowSizes[r] + (r < areas.length - 1 ? gap : 0);
+				} else {
+					break;
+				}
+			}
+		}
+		handle.style.top = skipHeight + "px";
+		handle.style.height = (gridEl.offsetHeight - skipHeight) + "px";
+		colHandleIdx++;
 	}
 
 	var rowHandles = gridEl.querySelectorAll(".appify-drag-handle-row");
 	var cumHeight = 0;
-	for(var j = 0; j < rowHandles.length; j++) {
+	var rowHandleIdx = 0;
+	for(var j = 0; j < rowSizes.length - 1; j++) {
 		cumHeight += rowSizes[j] + gap;
-		rowHandles[j].style.top = (cumHeight - gap / 2 - HANDLE_WIDTH / 2) + "px";
+		if(rowHandleIdx >= rowHandles.length) break;
+		var rHandle = rowHandles[rowHandleIdx];
+		if(parseInt(rHandle.dataset.handleIndex, 10) !== j) continue;
+		rHandle.style.top = (cumHeight - gap / 2 - HANDLE_WIDTH / 2) + "px";
+
+		// Recalculate left offset for spanning areas
+		var skipWidth = 0;
+		if(areas.length > 1) {
+			for(var c = 0; c < colSizes.length; c++) {
+				if(areas[j] && areas[j + 1] && areas[j][c] === areas[j + 1][c]) {
+					skipWidth += colSizes[c] + (c < colSizes.length - 1 ? gap : 0);
+				} else {
+					break;
+				}
+			}
+		}
+		rHandle.style.left = skipWidth + "px";
+		rHandle.style.width = (gridEl.offsetWidth - skipWidth) + "px";
+		rowHandleIdx++;
 	}
 }
 

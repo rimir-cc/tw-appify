@@ -195,8 +195,8 @@ AppifyAppWidget.prototype.execute = function() {
 		}
 
 		// Modal trigger buttons (always shown in edit mode)
-		var esc = function(s) { return s.replace(/"/g, "&quot;"); };
-		var escApp = esc(appTitle);
+		var escAttr = function(s) { return s.replace(/"/g, "&quot;"); };
+		var escApp = escAttr(appTitle);
 		var btnWt = '<span class="appify-debug-actions">' +
 			'<$button class="appify-debug-btn" tooltip="Channel editor">' +
 			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-channels" app="' + escApp + '"/>' +
@@ -240,10 +240,67 @@ AppifyAppWidget.prototype.execute = function() {
 		children: slotChildren
 	};
 
+	// Edit overlay (in-DOM, not a modal — FramedEngine needs ownerDocument)
+	var editOverlayNodes = [];
+	if(editMode) {
+		var editStateTitle = "$:/state/rimir/appify/edit-target/" + appTitle;
+
+		var overlayWt = '\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!is[draft]] [all[shadows+tiddlers]tag[$:/tags/Global]!is[draft]]\n' +
+			'<$let draftTitle={{' + escAttr(editStateTitle) + '}}>' +
+			'<div class="appify-edit-backdrop">' +
+			'<div class="appify-edit-overlay">' +
+			'<div class="appify-edit-overlay-header">' +
+			'<span class="appify-edit-overlay-title"><$text text={{{ [<draftTitle>get[draft.of]] }}}/></span>' +
+			'<span class="appify-edit-overlay-actions">' +
+			'<$button class="appify-edit-overlay-btn appify-edit-overlay-btn-save">' +
+			'<$action-appify-edit app="' + escApp + '" operation="save"/>' +
+			'Save &amp; Close</$button>' +
+			'<$button class="appify-edit-overlay-btn appify-edit-overlay-btn-cancel">' +
+			'<$action-appify-edit app="' + escApp + '" operation="cancel"/>' +
+			'Cancel</$button>' +
+			'</span>' +
+			'</div>' +
+			'<div class="appify-edit-overlay-content">' +
+			'<$vars ' +
+			'tv-config-toolbar-icons={{$:/config/Toolbar/Icons}} ' +
+			'tv-config-toolbar-text={{$:/config/Toolbar/Text}} ' +
+			'tv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}} ' +
+			'tv-enable-drag-and-drop={{$:/config/DragAndDrop/Enable}} ' +
+			'tv-show-missing-links={{$:/config/MissingLinks}} ' +
+			'storyviewTitle={{$:/view}} ' +
+			'languageTitle={{{ [{$:/language}get[name]] }}}>' +
+			'<$navigator story="$:/StoryList" history="$:/HistoryList" ' +
+			'openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} ' +
+			'openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} ' +
+			'relinkOnRename={{$:/config/RelinkOnRename}}>' +
+			'<$tiddler tiddler=<<draftTitle>>>' +
+			'<$transclude $tiddler="$:/core/ui/EditTemplate"/>' +
+			'</$tiddler>' +
+			'</$navigator>' +
+			'</$vars>' +
+			'</div>' +
+			'</div>' +
+			'</div>' +
+			'</$let>';
+
+		var overlayParsed = this.wiki.parseText("text/vnd.tiddlywiki", overlayWt, { parseAsInline: false });
+		if(overlayParsed && overlayParsed.tree) {
+			editOverlayNodes.push({
+				type: "reveal",
+				attributes: {
+					"stateTitle": { type: "string", value: editStateTitle },
+					"type": { type: "string", value: "nomatch" },
+					"text": { type: "string", value: "" }
+				},
+				children: overlayParsed.tree
+			});
+		}
+	}
+
 	var statewrapNode = {
 		type: "statewrap",
 		attributes: statewrapAttrs,
-		children: bodyTree.concat(preGridNodes).concat([gridNode])
+		children: bodyTree.concat(preGridNodes).concat([gridNode]).concat(editOverlayNodes)
 	};
 
 	this.makeChildWidgets([statewrapNode]);
@@ -321,8 +378,15 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 
 		var wt = '<div class="appify-slot-label">' +
 			'<span class="appify-slot-label-text">' + address + '<span class="appify-slot-label-tiddler">' + viewLabel + '</span></span>' +
-			'<span class="appify-slot-actions">' +
-			'<$button class="appify-split-btn" tooltip="Split horizontal">' +
+			'<span class="appify-slot-actions">';
+
+		if(viewTiddler) {
+			wt += '<$button class="appify-split-btn" tooltip="Edit view tiddler">' +
+				'<$action-appify-edit app="' + esc(appTitle) + '" tiddler="' + esc(viewTiddler) + '" operation="open"/>' +
+				'\u270E</$button>';
+		}
+
+		wt += '<$button class="appify-split-btn" tooltip="Split horizontal">' +
 			'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="split-h"/>' +
 			'\u2194</$button>' +
 			'<$button class="appify-split-btn" tooltip="Split vertical">' +

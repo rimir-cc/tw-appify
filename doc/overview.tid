@@ -25,7 +25,9 @@ Transforms TiddlyWiki into an app platform. Define full-viewport applications wi
 * View slots transclude tiddlers that communicate via statewrap channels
 * Always-visible floating action button for app switching
 * Edit mode modals: channel editor, rule editor, debug inspector with layout switcher
+* In-app tiddler editor: full TW EditTemplate with draft lifecycle in an overlay
 * Layout switching with automatic config persistence (view bindings, splits, proportions)
+* Draggable grid borders with grid-area-aware handle positioning
 * Extensible: register apps by tagging tiddlers, add custom layout templates
 
 !! Prerequisites

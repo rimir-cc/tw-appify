@@ -6,5 +6,6 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.2.1 |2026-03-18 |In-app tiddler editor (full EditTemplate with draft lifecycle); grid-area-aware drag handles; CSS cleanup |
 |v0.2.0 |2026-03-18 |Edit mode modals: channel editor, rule editor, debug inspector; layout switching with config persistence; focus layout |
 |v0.1.0 |2026-03-17 |Initial release: app renderer, FAB launcher, 4 layout templates, demo app |
