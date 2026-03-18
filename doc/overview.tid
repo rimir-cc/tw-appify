@@ -1,0 +1,46 @@
+created: 20260317120000000
+modified: 20260317120000000
+rdt.hub-category: ui
+rdt.hub-category-name: UI
+rdt.hub-order: 1
+rdt.order: 1
+rdt.plugin-key: appify
+rdt.plugin-name: appify
+rdt.plugin-subtitle: App-like layouts with statewrap integration and floating launcher
+rdt.section: Overview
+title: $:/plugins/rimir/appify/doc/overview
+type: text/vnd.tiddlywiki
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! What it does
+
+Transforms TiddlyWiki into an app platform. Define full-viewport applications with named grid layouts, statewrap-powered state channels, and view tiddlers bound to layout slots. A floating action button lets you switch between apps and the default wiki at any time.
+
+!! Features
+
+* Full-viewport app layouts using CSS grid with predefined templates
+* Each app gets its own statewrap channels, defaults, and reactive rules
+* View slots transclude tiddlers that communicate via statewrap channels
+* Always-visible floating action button for app switching
+* Extensible: register apps by tagging tiddlers, add custom layout templates
+
+!! Prerequisites
+
+* TiddlyWiki 5.3.0 or later
+* statewrap plugin
+
+!! Quick start
+
+# Add `rimir/appify` to `tiddlywiki.info` plugins
+# Restart server
+# Click the floating grid button (bottom-right) to see the demo "Project Manager" app
+# To create your own app: tag a tiddler with `$:/tags/rimir/appify/app` and set the `appify-*` fields
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/callout" type="info">
+<$fill $name="body">JS modules require a server restart after installation.</$fill>
+</$transclude>
+
+</$fill>
+</$transclude>

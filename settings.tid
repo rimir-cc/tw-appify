@@ -1,0 +1,8 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/settings
+type: text/vnd.tiddlywiki
+
+<div class="rr-settings-info-card">
+No configurable settings. Apps are defined by tagging tiddlers with `$:/tags/rimir/appify/app` and setting the appropriate fields. See the readme for details.
+</div>

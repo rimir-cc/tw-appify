@@ -1,0 +1,10 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/rimir/appify/layout
+caption: Dashboard
+appify-slots: topbar left right
+appify-grid-areas: "topbar topbar" "left right"
+appify-grid-columns: 1fr 1fr
+appify-grid-rows: auto 1fr
+title: $:/plugins/rimir/appify/layouts/dashboard
+type: text/vnd.tiddlywiki

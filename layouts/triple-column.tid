@@ -1,0 +1,10 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/rimir/appify/layout
+caption: Triple Column
+appify-slots: left center right
+appify-grid-areas: "left center right"
+appify-grid-columns: 1fr 1fr 1fr
+appify-grid-rows: 1fr
+title: $:/plugins/rimir/appify/layouts/triple-column
+type: text/vnd.tiddlywiki

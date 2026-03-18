@@ -1,0 +1,14 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/documentation
+type: text/vnd.tiddlywiki
+
+<%if [[$:/plugins/rimir/doc-template]has[plugin-type]] %>
+<$tiddler tiddler="$:/plugins/rimir/appify/doc/overview">
+<$transclude $tiddler="$:/plugins/rimir/appify/doc/overview"/>
+</$tiddler>
+<%else%>
+To display this documentation, the plugin [[$:/plugins/rimir/doc-template]] needs to be installed.
+
+See the [[readme|$:/plugins/rimir/appify/readme]] tab for a basic overview.
+<%endif%>

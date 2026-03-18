@@ -1,0 +1,58 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/samples/pm-sidebar
+type: text/vnd.tiddlywiki
+
+\define tasks-Alpha() Design Build Test
+\define tasks-Bravo() Research Plan Execute
+\define tasks-Charlie() Review Ship Deploy
+
+<div class="appify-demo-nav">
+
+!! Projects
+
+<$list filter="Alpha Bravo Charlie">
+<$button class={{{ [statewrap-get[project]match<currentTiddler>then[appify-demo-nav-item appify-demo-nav-active]else[appify-demo-nav-item]] }}}>
+<$action-statewrap-set channel="project" value=<<currentTiddler>>/>
+<<currentTiddler>>
+</$button>
+</$list>
+
+<%if [statewrap-get[project]!is[blank]]%>
+
+!! Tasks
+
+<$set name="proj" value={{{[statewrap-get[project]]}}}>
+<$list filter="[<proj>addprefix[tasks-]getvariable[]enlist-input[]]" variable="task">
+<$button class={{{ [statewrap-get[task]match<task>then[appify-demo-nav-item appify-demo-nav-active]else[appify-demo-nav-item]] }}}>
+<$action-statewrap-set channel="task" value=<<task>>/>
+<<task>>
+</$button>
+</$list>
+</$set>
+
+<%endif%>
+
+</div>
+
+<style>
+.appify-demo-nav-item {
+    display: block;
+    width: 100%;
+    padding: 6px 10px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+.appify-demo-nav-item:hover {
+    background: rgba(0,0,0,0.05);
+}
+.appify-demo-nav-active {
+    background: rgba(0,0,0,0.08);
+    font-weight: bold;
+}
+</style>

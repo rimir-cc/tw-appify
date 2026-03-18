@@ -1,0 +1,11 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/PageTemplate
+title: $:/plugins/rimir/appify/ui/overlay
+type: text/vnd.tiddlywiki
+
+<%if [[$:/state/rimir/appify/active-app]get[text]!is[blank]]%>
+<div class="appify-overlay">
+<$appify-app tiddler={{{[[$:/state/rimir/appify/active-app]get[text]]}}}/>
+</div>
+<%endif%>

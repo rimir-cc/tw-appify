@@ -1,0 +1,59 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/samples/pm-main
+type: text/vnd.tiddlywiki
+
+<%if [statewrap-get[task]!is[blank]]%>
+
+<div style="margin-bottom: 12px;">
+<$button class={{{ [statewrap-get[tab]match[overview]then[tc-btn-invisible tc-selected]else[tc-btn-invisible]] }}}>
+<$action-statewrap-set channel="tab" value="overview"/>
+Overview
+</$button>
+<$button class={{{ [statewrap-get[tab]match[notes]then[tc-btn-invisible tc-selected]else[tc-btn-invisible]] }}}>
+<$action-statewrap-set channel="tab" value="notes"/>
+Notes
+</$button>
+<$button class={{{ [statewrap-get[tab]match[log]then[tc-btn-invisible tc-selected]else[tc-btn-invisible]] }}}>
+<$action-statewrap-set channel="tab" value="log"/>
+Activity Log
+</$button>
+</div>
+
+<$reveal stateTitle={{{[statewrap-ref[tab]]}}} type="match" text="overview">
+
+!! Overview
+
+Task ''<$text text={{{[statewrap-get[task]]}}}/>'' in project ''<$text text={{{[statewrap-get[project]]}}}/>''.
+
+This is the overview panel. In a real app, this would show task details, assignees, deadlines, and status.
+
+</$reveal>
+
+<$reveal stateTitle={{{[statewrap-ref[tab]]}}} type="match" text="notes">
+
+!! Notes
+
+Notes for ''<$text text={{{[statewrap-get[task]]}}}/>''.
+
+This is the notes panel. In a real app, this would show editable notes and comments.
+
+</$reveal>
+
+<$reveal stateTitle={{{[statewrap-ref[tab]]}}} type="match" text="log">
+
+!! Activity Log
+
+Activity log for ''<$text text={{{[statewrap-get[task]]}}}/>''.
+
+This is the activity log panel. In a real app, this would show a timeline of changes and events.
+
+</$reveal>
+
+<%else%>
+
+<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+<em>Select a task from the sidebar</em>
+</div>
+
+<%endif%>

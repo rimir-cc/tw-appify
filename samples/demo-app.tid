@@ -1,0 +1,21 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/rimir/appify/app
+caption: Project Manager
+appify-layout: topbar-sidebar-main
+appify-channels: project task tab
+appify-default-tab: overview
+appify-view-topbar: $:/plugins/rimir/appify/samples/pm-topbar
+appify-view-sidebar: $:/plugins/rimir/appify/samples/pm-sidebar
+appify-view-main: $:/plugins/rimir/appify/samples/pm-main
+title: $:/plugins/rimir/appify/samples/demo-app
+type: text/vnd.tiddlywiki
+
+<$statewrap-rule when="project">
+<$action-statewrap-set channel="task" value=""/>
+<$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>
+
+<$statewrap-rule when="task">
+<$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>

@@ -1,0 +1,365 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/Stylesheet
+title: $:/plugins/rimir/appify/styles
+type: text/vnd.tiddlywiki
+
+/* === Full-viewport app overlay === */
+
+.appify-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    background: <<colour page-background>>;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* === Grid layout === */
+
+.appify-grid {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    background: <<colour tiddler-border>>;
+    gap: 1px;
+}
+
+.appify-slot {
+    background: <<colour tiddler-background>>;
+    overflow: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+}
+
+.appify-error {
+    padding: 20px;
+    color: <<colour alert-highlight>>;
+    font-weight: bold;
+}
+
+/* === FAB (floating action button) === */
+
+.appify-fab-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9500;
+}
+
+.appify-fab-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.15s;
+}
+
+.appify-fab-btn:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.appify-fab-btn svg {
+    pointer-events: none;
+}
+
+/* === FAB popup menu === */
+
+.appify-fab-popup {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    background: <<colour tiddler-background>>;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    min-width: 200px;
+    padding: 4px 0;
+}
+
+.appify-fab-item {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: <<colour foreground>>;
+    white-space: nowrap;
+}
+
+.appify-fab-item:hover {
+    background: <<colour tiddler-info-background>>;
+}
+
+.appify-fab-divider {
+    margin: 4px 0;
+    border: none;
+    border-top: 1px solid <<colour tiddler-border>>;
+}
+
+.appify-fab-empty {
+    padding: 8px 16px;
+    color: <<colour muted-foreground>>;
+    font-size: 13px;
+}
+
+/* === Edit mode: slot chrome === */
+
+.appify-slot-edit {
+    display: flex;
+    flex-direction: column;
+    border: 2px dashed <<colour primary>>;
+    overflow: hidden;
+}
+
+.appify-slot-label {
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    margin: -12px -12px 0 -12px;
+    flex-shrink: 0;
+}
+
+.appify-slot-label-tiddler {
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+.appify-editor-textarea {
+    flex: 1;
+    min-height: 80px;
+    width: 100% !important;
+    font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    border: none;
+    padding: 8px;
+    margin-top: 8px;
+    resize: none;
+    box-sizing: border-box;
+    background: <<colour code-background>>;
+    color: <<colour foreground>>;
+}
+
+.appify-editor-textarea:focus {
+    outline: 2px solid <<colour primary>>;
+    outline-offset: -2px;
+}
+
+/* === Edit mode: debug bar === */
+
+.appify-debug-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: <<colour code-background>>;
+    border-bottom: 2px solid <<colour primary>>;
+    font-size: 13px;
+    font-family: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+    flex-shrink: 0;
+}
+
+.appify-debug-title {
+    font-weight: bold;
+    color: <<colour primary>>;
+    margin-right: 4px;
+}
+
+.appify-debug-sep {
+    color: <<colour muted-foreground>>;
+}
+
+.appify-debug-channel {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.appify-debug-name {
+    color: <<colour primary>>;
+    font-weight: bold;
+}
+
+.appify-debug-value {
+    color: <<colour foreground>>;
+}
+
+.appify-debug-empty {
+    color: <<colour muted-foreground>>;
+    font-style: italic;
+}
+
+/* === Drag resize handles === */
+
+.appify-drag-handle {
+    background: transparent;
+    transition: background 0.1s;
+}
+
+.appify-drag-handle:hover {
+    background: <<colour primary>>;
+    opacity: 0.3;
+}
+
+.appify-drag-handle-col {
+    cursor: col-resize;
+}
+
+.appify-drag-handle-row {
+    cursor: row-resize;
+}
+
+/* === Split containers === */
+
+.appify-slot-split {
+    padding: 0;
+    overflow: hidden;
+}
+
+.appify-split {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.appify-split-h {
+    flex-direction: row;
+}
+
+.appify-split-v {
+    flex-direction: column;
+}
+
+.appify-split-pane {
+    overflow: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+}
+
+.appify-split-pane-nested {
+    padding: 0;
+    overflow: hidden;
+}
+
+.appify-split-pane-edit {
+    display: flex;
+    flex-direction: column;
+}
+
+.appify-split-handle {
+    flex-shrink: 0;
+    background: <<colour tiddler-border>>;
+    transition: background 0.1s;
+}
+
+.appify-split-handle:hover {
+    background: <<colour primary>>;
+}
+
+.appify-split-handle-h {
+    width: 5px;
+    cursor: col-resize;
+}
+
+.appify-split-handle-v {
+    height: 5px;
+    cursor: row-resize;
+}
+
+/* === Edit mode: slot actions bar === */
+
+.appify-slot-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    margin: -12px -12px 0 -12px;
+    flex-shrink: 0;
+}
+
+.appify-slot-label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.appify-slot-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+.appify-split-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: <<colour background>>;
+    padding: 1px 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.appify-split-btn:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.appify-split-btn-delete:hover {
+    background: rgba(255,80,80,0.6);
+}
+
+.appify-split-btn-apply {
+    background: <<colour primary>>;
+    color: <<colour background>>;
+    padding: 3px 10px;
+    font-size: 12px;
+}
+
+/* === Empty slot: view tiddler input === */
+
+.appify-view-input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    flex: 1;
+}
+
+.appify-view-input {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: monospace;
+    background: <<colour tiddler-background>>;
+    color: <<colour foreground>>;
+}

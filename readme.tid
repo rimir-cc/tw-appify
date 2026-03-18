@@ -1,0 +1,47 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/readme
+type: text/vnd.tiddlywiki
+
+! Appify
+
+Transform TiddlyWiki into an app platform. Define full-viewport applications with named layouts, statewrap-powered state channels, and a floating launcher to switch between apps and the default wiki.
+
+!! Features
+
+* ''App layouts'' — predefined grid templates (sidebar+main, topbar+sidebar+main, triple-column, dashboard) with named view slots
+* ''Statewrap integration'' — each app defines its own state channels and reactive rules
+* ''View binding'' — each slot transcludes a tiddler that reads/writes channels by name
+* ''Floating app switcher'' — always-visible FAB button to launch apps or return to the default wiki
+* ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`
+
+!! Quick start
+
+# Install the plugin (requires statewrap)
+# Create an app tiddler tagged `$:/tags/rimir/appify/app` with layout and channel fields
+# Create view tiddlers for each layout slot
+# Click the floating button (bottom-right) to launch your app
+
+!! App tiddler fields
+
+|!Field |!Description |
+|`appify-layout` |Layout template name (e.g., `topbar-sidebar-main`) |
+|`appify-channels` |Space-separated channel names for statewrap |
+|`appify-default-<name>` |Default value for channel `<name>` |
+|`appify-view-<slot>` |Tiddler title to transclude into layout slot `<slot>` |
+|`caption` |Display name in the app switcher |
+
+The tiddler's text body contains `<$statewrap-rule>` definitions for reactive rules.
+
+!! Built-in layouts
+
+|!Name |!Slots |!Description |
+|`sidebar-main` |sidebar, main |Left sidebar + main content |
+|`topbar-sidebar-main` |topbar, sidebar, main |Top bar + left sidebar + main content |
+|`triple-column` |left, center, right |Three equal columns |
+|`dashboard` |topbar, left, right |Top bar + two equal panels |
+
+!! Prerequisites
+
+* TiddlyWiki 5.3.0 or later
+* statewrap plugin

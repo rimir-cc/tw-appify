@@ -1,0 +1,12 @@
+{
+    "description": "Test edition for appify",
+    "plugins": [
+        "tiddlywiki/jasmine",
+        "rimir/statewrap",
+        "rimir/appify"
+    ],
+    "themes": [
+        "tiddlywiki/vanilla",
+        "tiddlywiki/snowwhite"
+    ]
+}

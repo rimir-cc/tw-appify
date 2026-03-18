@@ -1,0 +1,10 @@
+created: 20260317120000000
+modified: 20260317120000000
+tags: $:/tags/rimir/appify/layout
+caption: Sidebar + Main
+appify-slots: sidebar main
+appify-grid-areas: "sidebar main"
+appify-grid-columns: 250px 1fr
+appify-grid-rows: 1fr
+title: $:/plugins/rimir/appify/layouts/sidebar-main
+type: text/vnd.tiddlywiki

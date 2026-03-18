@@ -1,0 +1,9 @@
+created: 20260317120000000
+modified: 20260317120000000
+title: $:/plugins/rimir/appify/changelog
+type: text/vnd.tiddlywiki
+
+! Changelog
+
+|!Version |!Date |!Changes |
+|v0.1.0 |2026-03-17 |Initial release: app renderer, FAB launcher, 4 layout templates, demo app |
