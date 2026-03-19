@@ -1,0 +1,62 @@
+title: $:/rimir/llm-doc/appify/rules
+tags: $:/tags/rimir/appify/llm-doc
+description: Reactive rules — when a channel changes, automatically set other channels (cascading resets, tab defaults)
+llm-sort: 06
+type: text/vnd.tiddlywiki
+
+# Reactive Rules
+
+Rules live in the app tiddler's body text (the `text` field). They define cascading channel updates — when one channel changes, others are automatically set.
+
+## Syntax
+
+```
+<$statewrap-rule when="project">
+  <$action-statewrap-set channel="task" value=""/>
+  <$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>
+```
+
+This means: when the "project" channel changes, clear "task" and reset "tab" to "overview".
+
+## Common patterns
+
+### Master-detail reset
+When selecting a new project, clear the task selection and reset tabs:
+```
+<$statewrap-rule when="project">
+  <$action-statewrap-set channel="task" value=""/>
+  <$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>
+```
+
+### Cascade reset
+When a mid-level selection changes, reset downstream:
+```
+<$statewrap-rule when="task">
+  <$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>
+```
+
+## Modifying rules
+
+1. Read the app tiddler's text field (get_tiddler)
+2. Edit the `<$statewrap-rule>` blocks
+3. Write back with set_field(field="text")
+
+Multiple rules are just sequential blocks in the body text.
+
+## Adding a rule for a new channel
+
+If you add a channel "theme", you might want:
+```
+<$statewrap-rule when="theme">
+  <$action-statewrap-set channel="tab" value="overview"/>
+</$statewrap-rule>
+```
+
+Append this to the existing body text.
+
+## Deeper docs
+
+- `$:/rimir/llm-doc/appify/channels` — channel mechanics

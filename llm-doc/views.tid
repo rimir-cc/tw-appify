@@ -1,0 +1,81 @@
+title: $:/rimir/llm-doc/appify/views
+tags: $:/tags/rimir/appify/llm-doc
+description: View tiddlers — how they render in slots, common wikitext patterns (statewrap, buttons, lists, reveals), modifying content
+llm-sort: 03
+type: text/vnd.tiddlywiki
+
+# View Tiddlers
+
+View tiddlers are regular wikitext tiddlers that render inside layout slots. They are assigned via `appify-view-<slot>` fields on the app tiddler.
+
+## Binding a view to a slot
+
+```
+set_field(title="<appTitle>", field="appify-view-sidebar", value="MyApp/sidebar-view")
+```
+
+## Reading a view's source
+
+Use `get_tiddler(title)` to read the full wikitext. This is what you modify with `set_field(field="text")`.
+
+## Common wikitext patterns in views
+
+### Navigation list (clickable items that set a channel)
+```
+<$list filter="Alpha Bravo Charlie">
+<$button>
+<$action-statewrap-set channel="project" value=<<currentTiddler>>/>
+<<currentTiddler>>
+</$button>
+</$list>
+```
+
+### Conditional rendering (show content based on channel)
+```
+<%if [statewrap-get[project]!is[blank]]%>
+  Project is selected: <$text text={{{[statewrap-get[project]]}}}/>
+<%else%>
+  Select a project
+<%endif%>
+```
+
+### Tab buttons (mutually exclusive selection)
+```
+<$button class={{{ [statewrap-get[tab]match[overview]then[active]else[]] }}}>
+<$action-statewrap-set channel="tab" value="overview"/>
+Overview
+</$button>
+```
+
+### Reveal panel (show/hide based on channel value)
+```
+<$reveal stateTitle={{{[statewrap-ref[tab]]}}} type="match" text="overview">
+  Content for overview tab
+</$reveal>
+```
+
+### Dynamic macro-based data
+```
+\define items-Alpha() Design Build Test
+\define items-Bravo() Research Plan Execute
+
+<$set name="proj" value={{{[statewrap-get[project]]}}}>
+<$list filter="[<proj>addprefix[items-]getvariable[]enlist-input[]]" variable="item">
+  <<item>>
+</$list>
+</$set>
+```
+This pattern stores data in macros keyed by channel value.
+
+## Modifying a view
+
+1. Read current wikitext with get_tiddler
+2. Understand the structure (macros, lists, reveals, channels used)
+3. Write updated wikitext with set_field(field="text", value="new wikitext")
+
+Important: Preserve the existing patterns. If a view uses `\define` macros for data, add new entries in the same pattern. If it uses `$list filter="..."`, add items to that filter.
+
+## Deeper docs
+
+- `$:/rimir/llm-doc/appify/channels` — how channels work
+- `$:/rimir/llm-doc/appify/splits` — splitting a slot into sub-panes

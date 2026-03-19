@@ -1,0 +1,30 @@
+created: 20260319120000000
+modified: 20260319120000000
+title: $:/plugins/rimir/appify/ui/modal-delete
+subtitle: Delete App
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<div class="appify-modal-section">
+
+<$transclude $tiddler="$:/plugins/rimir/theme/callout" type="danger">
+<$fill $name="body">
+This will permanently delete the app and all its view tiddlers. This cannot be undone.
+</$fill>
+</$transclude>
+
+<div style="margin: 12px 0;">
+<strong>App:</strong> <<app>><br/>
+<strong>Views:</strong>
+<$list filter="[<app>fields[]prefix[appify-view-]]" variable="field">
+<div style="margin-left: 16px;"><code><$text text={{{[<app>get<field>]}}}/></code></div>
+</$list>
+</div>
+
+<$button class="appify-modal-btn appify-modal-btn-primary" style="background: #c44; border-color: #c44;">
+<$action-appify-delete app=<<app>>/>
+<$action-sendmessage $message="tm-close-tiddler"/>
+Delete App
+</$button>
+
+</div>

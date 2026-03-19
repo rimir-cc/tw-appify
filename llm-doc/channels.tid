@@ -1,0 +1,63 @@
+title: $:/rimir/llm-doc/appify/channels
+tags: $:/tags/rimir/appify/llm-doc
+description: How channels work — state tiddler paths, setting/reading values, adding new channels, defaults
+llm-sort: 02
+type: text/vnd.tiddlywiki
+
+# Channels
+
+Channels are named state variables that drive app behavior. Each channel is a tiddler in the wiki store.
+
+## State tiddler path
+
+```
+$:/state/rimir/statewrap/<appTitle>/<channelName>
+```
+
+The `text` field holds the current value. Empty text = channel is unset.
+
+## Reading channels in wikitext
+
+Inside view tiddlers (which are wrapped by `<$statewrap>`), use these filter operators:
+
+- `[statewrap-get[project]]` — returns current value of the "project" channel
+- `[statewrap-ref[project]]` — returns the full state tiddler path (useful for `$reveal stateTitle`)
+
+Example: `<%if [statewrap-get[project]!is[blank]]%>...<%endif%>`
+
+## Setting a channel value
+
+From outside (tool call):
+```
+set_field(title="$:/state/rimir/statewrap/<appTitle>/<channel>", field="text", value="new value")
+```
+
+From wikitext (inside a button or action):
+```
+<$action-statewrap-set channel="project" value="Alpha"/>
+```
+
+To clear: set value to empty string `""`.
+
+## Adding a new channel
+
+1. Read the app tiddler's `appify-channels` field
+2. Append the new channel name (space-separated)
+3. set_field to update `appify-channels`
+4. Optionally set a default: set_field(field="appify-default-<channelName>", value="default")
+
+Example — add a "theme" channel with default "light":
+```
+set_field(title="<appTitle>", field="appify-channels", value="project task tab theme")
+set_field(title="<appTitle>", field="appify-default-theme", value="light")
+```
+
+## Removing a channel
+
+1. Remove the name from `appify-channels`
+2. Delete the `appify-default-<channel>` field if it exists (set to empty)
+3. Consider removing rules that reference it
+
+## Deeper docs
+
+- `$:/rimir/llm-doc/appify/rules` — reactive rules that fire when channels change

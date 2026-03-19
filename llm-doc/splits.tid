@@ -1,0 +1,62 @@
+title: $:/rimir/llm-doc/appify/splits
+tags: $:/tags/rimir/appify/llm-doc
+description: Splitting a layout slot into sub-panes — horizontal/vertical splits, nested splits, assigning views to split panes
+llm-sort: 05
+type: text/vnd.tiddlywiki
+
+# Splits
+
+A slot can be split into sub-panes, each with its own view tiddler. Splits are stored as JSON.
+
+## Storage
+
+Splits config tiddler: `$:/config/rimir/appify/splits/<appTitle>`
+
+The JSON is an object keyed by slot name. Each split node has:
+- `direction`: `"horizontal"` or `"vertical"`
+- `ratio`: number between 0 and 1 (first pane's proportion)
+- `children`: array of 2 items — each is either `null` (leaf pane) or another split node
+
+## Example: sidebar split vertically
+
+```json
+{
+  "sidebar": {
+    "direction": "vertical",
+    "ratio": 0.5,
+    "children": [null, null]
+  }
+}
+```
+
+This splits the sidebar into top and bottom halves.
+
+## View binding for split panes
+
+Split panes are addressed with dot-notation: `<slot>.<index>.<index>...`
+
+View fields use this address: `appify-view-sidebar.0` (top pane), `appify-view-sidebar.1` (bottom pane).
+
+For nested splits: `appify-view-main.0.1` = main slot → first child → second sub-child.
+
+To assign a view to a split pane:
+```
+set_field(title="<appTitle>", field="appify-view-sidebar.0", value="MyApp/nav-view")
+set_field(title="<appTitle>", field="appify-view-sidebar.1", value="MyApp/detail-view")
+```
+
+## Creating a split
+
+1. Read current splits: get_tiddler on `$:/config/rimir/appify/splits/<appTitle>`
+2. Add/modify the JSON structure
+3. Write it back with set_field(field="text")
+4. Set view bindings for the new panes
+
+## Removing a split
+
+Set the slot's split config to `null` or remove the key from the JSON.
+
+## Deeper docs
+
+- `$:/rimir/llm-doc/appify/proportions` — grid-level column/row sizing
+- `$:/rimir/llm-doc/appify/views` — what to put in each pane

@@ -1,0 +1,33 @@
+created: 20260319120000000
+modified: 20260319120000000
+title: $:/plugins/rimir/appify/ui/modal-clone
+subtitle: Clone App
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<div class="appify-modal-section">
+
+Create a copy of this app and its view tiddlers in your own namespace.
+
+<div class="appify-modal-row">
+<label>Name</label>
+<$edit-text tiddler="$:/state/rimir/appify/clone-name" tag="input" class="appify-modal-input" placeholder="My App"/>
+</div>
+
+<div class="appify-modal-row">
+<label>Prefix</label>
+<$edit-text tiddler="$:/config/rimir/appify/clone-prefix" tag="input" class="appify-modal-input" default="$:/config/rimir/appify"/>
+</div>
+
+<div style="font-size: 12px; color: <<colour muted-foreground>>; margin: 4px 0 12px 0;">
+App → <code><$text text={{{[[$:/config/rimir/appify/clone-prefix]get[text]else[$:/config/rimir/appify]addsuffix[/apps/]addsuffix{$:/state/rimir/appify/clone-name}]}}}/></code>
+</div>
+
+<$button class="appify-modal-btn appify-modal-btn-primary">
+<$action-appify-clone source=<<app>> name={{$:/state/rimir/appify/clone-name}}/>
+<$action-setfield $tiddler="$:/state/rimir/appify/clone-name" text=""/>
+<$action-sendmessage $message="tm-close-tiddler"/>
+Create Clone
+</$button>
+
+</div>

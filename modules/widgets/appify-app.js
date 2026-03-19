@@ -71,6 +71,7 @@ AppifyAppWidget.prototype.execute = function() {
 	var colCount = gridColumns.split(/\s+/).filter(Boolean).length;
 	var rowCount = gridRows.split(/\s+/).filter(Boolean).length;
 	var propConfigTitle = "$:/config/rimir/appify/proportions/" + appTitle;
+	this.propConfigTitle = propConfigTitle;
 	var propTiddler = this.wiki.getTiddler(propConfigTitle);
 	if(propTiddler && propTiddler.fields.text) {
 		try {
@@ -90,7 +91,8 @@ AppifyAppWidget.prototype.execute = function() {
 
 	// Read splits config
 	var splitsConfig = {};
-	var splitsTiddler = this.wiki.getTiddler("$:/config/rimir/appify/splits/" + appTitle);
+	this.splitsConfigTitle = "$:/config/rimir/appify/splits/" + appTitle;
+	var splitsTiddler = this.wiki.getTiddler(this.splitsConfigTitle);
 	if(splitsTiddler && splitsTiddler.fields.text) {
 		try { splitsConfig = JSON.parse(splitsTiddler.fields.text); } catch(e) {}
 	}
@@ -209,6 +211,13 @@ AppifyAppWidget.prototype.execute = function() {
 			'<$action-appify-rule app="' + escApp + '" operation="parse"/>' +
 			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-debug" app="' + escApp + '"/>' +
 			'\uD83D\uDD0D</$button>' +
+			'<$button class="appify-debug-btn" tooltip="Clone app">' +
+			'<$action-setfield $tiddler="$:/state/rimir/appify/clone-name" text="' + escAttr((fields.caption || "App") + " (copy)") + '"/>' +
+			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-clone" app="' + escApp + '"/>' +
+			'\u29C9</$button>' +
+			'<$button class="appify-debug-btn appify-debug-btn-danger" tooltip="Delete app">' +
+			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-delete" app="' + escApp + '"/>' +
+			'\u2715</$button>' +
 			'</span>';
 
 		var btnParsed = this.wiki.parseText("text/vnd.tiddlywiki", btnWt, { parseAsInline: false });
@@ -424,6 +433,14 @@ AppifyAppWidget.prototype.refresh = function(changedTiddlers) {
 		return true;
 	}
 	if(changedTiddlers[SPLITS_CHANGED_TIDDLER]) {
+		this.refreshSelf();
+		return true;
+	}
+	if(this.propConfigTitle && changedTiddlers[this.propConfigTitle]) {
+		this.refreshSelf();
+		return true;
+	}
+	if(this.splitsConfigTitle && changedTiddlers[this.splitsConfigTitle]) {
 		this.refreshSelf();
 		return true;
 	}

@@ -1,0 +1,28 @@
+created: 20260318120000000
+modified: 20260318120000000
+title: $:/plugins/rimir/appify/ui/llm-chat-panel
+type: text/vnd.tiddlywiki
+
+\import [[$:/plugins/rimir/llm-connect/ui/tool-selector]]
+\whitespace trim
+<$reveal state="$:/state/rimir/appify/llm-chat-open" type="match" text="yes" animate="yes">
+<div class="appify-llm-panel llm-chat-panel">
+<div class="appify-llm-panel-header llm-chat-panel-header">
+<span>App Chat</span>
+<span class="appify-llm-panel-header-actions">
+<<llm-tool-selector {{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix{$:/state/rimir/appify/active-app}] }}}>>
+<$button set="$:/state/rimir/appify/llm-chat-open" setTo="no" class="tc-btn-invisible">&times;</$button>
+</span>
+</div>
+<$wikify name="appifyPrompt" text={{$:/plugins/rimir/appify/ui/llm-prompt-template}}>
+<$llm-chat
+  chatTiddler={{{[[$:/temp/rimir/appify/llm-chat/]addsuffix{$:/state/rimir/appify/active-app}]}}}
+  systemPrompt=<<appifyPrompt>>
+  tools="[all[shadows+tiddlers]tag[$:/tags/rimir/llm-connect/tool]]"
+  placeholder="Ask about this app..."
+  protectionMode="allow"
+  allowFilter="[all[shadows+tiddlers]tag[$:/tags/rimir/appify/llm-doc]] [prefix[$:/state/rimir/statewrap/]] [prefix[$:/config/rimir/appify/]]"
+/>
+</$wikify>
+</div>
+</$reveal>

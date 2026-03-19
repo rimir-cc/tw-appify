@@ -17,14 +17,18 @@ Transform TiddlyWiki into an app platform. Define full-viewport applications wit
 * ''In-app tiddler editor'' — edit view tiddlers with the full TW EditTemplate (toolbar, tags, fields, type) in a draft-based overlay, with save/cancel
 * ''Layout switching'' — switch layouts from the debug inspector; configs (view bindings, splits, proportions) are saved per layout and restored when switching back
 * ''Draggable grid borders'' — resize grid tracks and split panes by dragging; handles respect grid-area spans
+* ''Clone & delete'' — clone blueprint apps into your own namespace; delete apps with full cleanup
+* ''LLM integration'' — in-app chat panel (requires llm-connect) with progressive disclosure documentation and scoped allow-list access
 * ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`
 
 !! Quick start
 
 # Install the plugin (requires statewrap)
-# Create an app tiddler tagged `$:/tags/rimir/appify/app` with layout and channel fields
-# Create view tiddlers for each layout slot
-# Click the floating button (bottom-right) to launch your app
+# Open the sample app from the FAB (bottom-right)
+# Enter edit mode (Ctrl+M) and click ''⧉ Clone'' to create your own copy
+# Customize the cloned app — edit views, add channels, change layouts
+
+The plugin ships sample apps as read-only blueprints. They must be cloned into your own namespace before use. Cloned apps and views live at `$:/config/rimir/appify/apps/` and `$:/config/rimir/appify/views/` by default (configurable via clone prefix setting).
 
 !! App tiddler fields
 
@@ -39,11 +43,13 @@ The tiddler's text body contains `<$statewrap-rule>` definitions for reactive ru
 
 !! Edit mode (Ctrl+M)
 
-In edit mode, the debug bar shows live channel values and three buttons:
+In edit mode, the debug bar shows live channel values and five buttons:
 
 * ''⚙ Channel editor'' — add, rename, delete channels and set default values
 * ''⇄ Rule editor'' — view and edit reactive rules (when channel X changes → set channel Y)
 * ''🔍 Debug inspector'' — app info, live state tiddler paths, layout switcher
+* ''⧉ Clone'' — create a copy of the app and its views in a configurable namespace
+* ''✕ Delete'' — permanently remove the app and all associated tiddlers
 
 !! Built-in layouts
 

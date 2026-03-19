@@ -1,0 +1,15 @@
+title: $:/plugins/rimir/appify/tools/appify-guide
+tags: $:/tags/rimir/llm-connect/tool
+tool-name: context_guide
+tool-description: Browse available documentation for the current context. Returns a table of contents with tiddler titles and descriptions. Use get_tiddler to read any doc that looks relevant.
+tool-schema: {"type":"object","properties":{}}
+tool-mode: read
+type: text/vnd.tiddlywiki
+
+Available documentation for the current app context:
+
+<$list filter="[all[shadows+tiddlers]tag[$:/tags/rimir/appify/llm-doc]sort[llm-sort]]" variable="doc">
+- <<doc>> — <$text text={{{[<doc>get[description]]}}}/>
+</$list>
+
+Use get_tiddler(title) to read any doc listed above. Each doc may reference deeper docs you can follow.

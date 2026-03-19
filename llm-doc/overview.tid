@@ -1,0 +1,45 @@
+title: $:/rimir/llm-doc/appify/overview
+tags: $:/tags/rimir/appify/llm-doc
+description: High-level overview of how appify apps work — layout, slots, views, channels, state management
+llm-sort: 01
+type: text/vnd.tiddlywiki
+
+# Appify Overview
+
+An appify app replaces TiddlyWiki's default page layout with a grid-based app layout. Each app is a tiddler tagged `$:/tags/rimir/appify/app`.
+
+## Core concepts
+
+- **Layout**: A grid template (e.g., sidebar-main, topbar-sidebar-main) that defines named **slots**
+- **Slots**: Grid areas where **view tiddlers** are rendered
+- **View tiddlers**: Regular wikitext tiddlers assigned to slots via `appify-view-<slot>` fields on the app tiddler
+- **Channels**: Named state variables (stored as `$:/state/rimir/statewrap/<appTitle>/<channel>` tiddlers). Views read channels with `[statewrap-get[channel]]` and set them with `<$action-statewrap-set channel="name" value="val"/>`
+- **Rules**: Reactive logic in the app tiddler's body text — when one channel changes, other channels are automatically set
+
+## App tiddler fields
+
+- `appify-layout`: layout name (e.g., `topbar-sidebar-main`)
+- `appify-channels`: space-separated channel names
+- `appify-default-<channel>`: default value for a channel
+- `appify-view-<slot>`: title of view tiddler for that slot
+- `caption`: display name
+
+## Samples vs user apps
+
+The plugin ships sample apps as read-only blueprints under `$:/plugins/rimir/appify/samples/`. These must be cloned before use. Cloned apps live at `$:/config/rimir/appify/apps/<name>` and their views at `$:/config/rimir/appify/views/<name>`. Only cloned apps can be modified.
+
+## What you can modify (on cloned apps)
+
+- **Channel values**: set_field on the state tiddler to change app navigation/selection state
+- **View tiddler wikitext**: set_field(field="text") to change what renders in a slot
+- **App tiddler fields**: add channels, change defaults, change view bindings
+- **App tiddler body**: modify reactive rules
+
+## Deeper docs
+
+- `$:/rimir/llm-doc/appify/channels` — working with channels (add, rename, defaults, state tiddlers)
+- `$:/rimir/llm-doc/appify/views` — view tiddlers (wikitext patterns, statewrap usage)
+- `$:/rimir/llm-doc/appify/layouts` — available layouts, slot names, switching layouts
+- `$:/rimir/llm-doc/appify/splits` — splitting a slot into sub-panes
+- `$:/rimir/llm-doc/appify/rules` — reactive rules (when/then channel cascades)
+- `$:/rimir/llm-doc/appify/proportions` — resizing grid columns/rows
