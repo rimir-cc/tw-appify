@@ -1,0 +1,33 @@
+created: 20260320120000000
+modified: 20260320120000000
+title: $:/plugins/rimir/appify/samples/cond-overview
+type: text/vnd.tiddlywiki
+
+!! Overview
+
+<%if [statewrap-get[project]!is[blank]]%>
+
+Project: ''<$text text={{{[statewrap-get[project]]}}}/>''
+
+This is the overview panel. Always visible when a project is selected.
+
+<%else%>
+
+No project selected. Pick one from the sidebar to see conditional splits and stacked tabs in action.
+
+This pane should stretch to fill the entire main area when no project is selected. If you can see a gap or empty space on the right side, the conditional pane (main.1) is still consuming space and the CSS collapse is not working correctly.
+
+---
+
+!! Test matrix
+
+|!Project |!Team tab |!Budget tab |!Right pane |
+|Alpha |visible |visible |visible |
+|Bravo |visible |hidden |visible |
+|Charlie |hidden |visible |visible |
+|Delta |hidden |hidden |visible |
+|''(none)'' |hidden |hidden |''hidden'' |
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+<%endif%>

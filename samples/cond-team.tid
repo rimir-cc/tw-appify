@@ -1,0 +1,15 @@
+created: 20260320120000000
+modified: 20260320120000000
+title: $:/plugins/rimir/appify/samples/cond-team
+type: text/vnd.tiddlywiki
+
+!! Team
+
+Team for ''<$text text={{{[statewrap-get[project]]}}}/>''
+
+This panel is only visible when the selected project has team data.
+
+* Alpha → "Design crew"
+* Bravo → "Eng team"
+* Charlie → (no team — this tab hidden)
+* Delta → (no team — this tab hidden)

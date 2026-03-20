@@ -1,0 +1,12 @@
+created: 20260320120000000
+modified: 20260320120000000
+tags: $:/tags/rimir/appify/app
+caption: Conditional Demo
+appify-layout: sidebar-main
+appify-channels: project
+appify-view-sidebar: $:/plugins/rimir/appify/samples/cond-sidebar
+title: $:/plugins/rimir/appify/samples/cond-app
+type: text/vnd.tiddlywiki
+
+<$statewrap-rule when="project">
+</$statewrap-rule>

@@ -538,6 +538,7 @@ type: text/vnd.tiddlywiki
     height: 100%;
 }
 
+
 .appify-split-h {
     flex-direction: row;
 }
@@ -657,6 +658,106 @@ type: text/vnd.tiddlywiki
     font-family: monospace;
     background: <<colour tiddler-background>>;
     color: <<colour foreground>>;
+}
+
+/* === Stacked views: tab bar === */
+
+.appify-tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid <<colour tiddler-border>>;
+    flex-shrink: 0;
+    background: <<colour code-background>>;
+}
+
+.appify-tab-bar:empty {
+    display: none;
+}
+
+.appify-tab-btn {
+    padding: 6px 14px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: <<colour muted-foreground>>;
+    cursor: pointer;
+    font-size: 13px;
+    margin-bottom: -2px;
+    transition: color 0.1s, border-color 0.1s;
+}
+
+.appify-tab-btn:hover {
+    color: <<colour foreground>>;
+    background: <<colour tiddler-info-background>>;
+}
+
+.appify-tab-active {
+    color: <<colour primary>>;
+}
+
+.appify-tab-btn:has(.appify-tab-active) {
+    color: <<colour primary>>;
+    border-bottom-color: <<colour primary>>;
+    font-weight: bold;
+}
+
+.appify-tab-content {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+    padding: 12px;
+}
+
+/* Stacked views: pane with tabs needs flex column for proper fill */
+.appify-split-pane:has(.appify-tab-bar) {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Stacked views: single-view mode (tab bar hidden when only 1 tab) */
+.appify-tab-bar:has(> :only-child) {
+    display: none;
+}
+
+/* When tab bar is hidden, content gets padding back */
+.appify-tab-bar:has(> :only-child) + .appify-tab-content {
+    padding: 12px;
+}
+
+/* Stacked views: edit mode list */
+
+.appify-stacked-edit-list {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.appify-stacked-edit-item {
+    padding: 4px 0;
+    border-bottom: 1px solid <<colour tiddler-border>>;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.appify-stacked-edit-item:last-child {
+    border-bottom: none;
+}
+
+.appify-stacked-edit-label {
+    font-weight: bold;
+    color: <<colour primary>>;
+}
+
+.appify-stacked-edit-view {
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    font-size: 12px;
+    color: <<colour muted-foreground>>;
+}
+
+.appify-stacked-edit-cond {
+    cursor: help;
+    font-size: 14px;
 }
 
 /* === LLM Chat FAB button === */

@@ -1,0 +1,10 @@
+created: 20260320120000000
+modified: 20260320120000000
+title: $:/plugins/rimir/appify/samples/cond-detail
+type: text/vnd.tiddlywiki
+
+!! Detail
+
+Detail panel for ''<$text text={{{[statewrap-get[project]]}}}/>''
+
+This entire pane (right side) is conditionally visible — it only appears when a project is selected. The sibling pane (overview + tabs) expands to fill the full width when no project is selected.

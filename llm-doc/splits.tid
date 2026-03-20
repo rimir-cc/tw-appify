@@ -1,6 +1,6 @@
 title: $:/rimir/llm-doc/appify/splits
 tags: $:/tags/rimir/appify/llm-doc
-description: Splitting a layout slot into sub-panes — horizontal/vertical splits, nested splits, assigning views to split panes
+description: Splitting a layout slot into sub-panes — horizontal/vertical splits, nested splits, assigning views, conditional visibility, stacked views (tab groups)
 llm-sort: 05
 type: text/vnd.tiddlywiki
 
@@ -15,7 +15,12 @@ Splits config tiddler: `$:/config/rimir/appify/splits/<appTitle>`
 The JSON is an object keyed by slot name. Each split node has:
 - `direction`: `"horizontal"` or `"vertical"`
 - `ratio`: number between 0 and 1 (first pane's proportion)
-- `children`: array of 2 items — each is either `null` (leaf pane) or another split node
+- `children`: array of 2 items — each is either a leaf node or another split node
+
+Leaf nodes have:
+- `view`: tiddler title to transclude (single-view leaf)
+- `views`: array of view entries (stacked views / tab group) — mutually exclusive with `view`
+- `condition`: optional TW filter expression — when empty result, the pane is hidden
 
 ## Example: sidebar split vertically
 
@@ -24,37 +29,96 @@ The JSON is an object keyed by slot name. Each split node has:
   "sidebar": {
     "direction": "vertical",
     "ratio": 0.5,
-    "children": [null, null]
+    "children": [
+      { "view": "MyApp/nav" },
+      { "view": "MyApp/detail" }
+    ]
   }
 }
 ```
 
-This splits the sidebar into top and bottom halves.
+## Conditional visibility
+
+Any leaf or split child node can have a `condition` filter. When the filter returns empty, the pane (and its resize handle) are hidden. The sibling pane expands to fill the space via flexbox.
+
+```json
+{
+  "main": {
+    "direction": "horizontal",
+    "ratio": 0.5,
+    "children": [
+      { "view": "PM/list" },
+      { "view": "PM/detail", "condition": "[statewrap-get[project]!is[blank]]" }
+    ]
+  }
+}
+```
+
+Conditions work inside `<$statewrap>`, so `statewrap-get` operators are available. The `$list` widget re-evaluates its filter on refresh — no manual refresh needed.
+
+### Corner cases
+
+| Case | Behavior |
+|------|----------|
+| One pane hidden | Sibling fills space, handle hidden |
+| Parent node hidden | Entire subtree hidden, parent's sibling fills space |
+| Inner pane hidden | Inner sibling fills inner space, outer split unchanged |
+| Both children hidden | Container empty |
+
+## Stacked views (tab groups)
+
+A leaf node can hold multiple views using a `views` array instead of a single `view` field:
+
+```json
+{
+  "views": [
+    { "view": "PM/overview", "label": "Overview" },
+    { "view": "PM/team", "label": "Team", "condition": "[statewrap-get[project]!is[blank]get[team]!is[blank]]" },
+    { "view": "PM/budget", "label": "Budget", "condition": "[statewrap-get[project]!is[blank]get[budget]!is[blank]]" }
+  ]
+}
+```
+
+Each view entry has:
+- `view`: tiddler title to transclude (required)
+- `label`: tab label (defaults to last segment of view title)
+- `condition`: optional filter — when empty, this view is hidden from tabs
+
+### Rendering behavior
+
+- **0 visible views**: pane content is empty (collapses if parent has condition mechanism)
+- **1 visible view**: rendered directly, no tab bar
+- **2+ visible views**: tab bar + content panels with `$reveal` switching
+
+Tab selection state is stored in: `$:/state/rimir/appify/tab/<appTitle>/<address>`
+
+Default active tab: first visible view.
+
+### Pane-level condition derivation
+
+When all views in a stacked leaf have conditions, the pane automatically derives a combined condition: it's visible when at least one view's condition is met. If any view has no condition (always visible), the pane is always visible.
 
 ## View binding for split panes
 
 Split panes are addressed with dot-notation: `<slot>.<index>.<index>...`
 
-View fields use this address: `appify-view-sidebar.0` (top pane), `appify-view-sidebar.1` (bottom pane).
+For nested splits: `main.0.1` = main slot → first child → second sub-child.
 
-For nested splits: `appify-view-main.0.1` = main slot → first child → second sub-child.
+## Operations via action widget
 
-To assign a view to a split pane:
 ```
-set_field(title="<appTitle>", field="appify-view-sidebar.0", value="MyApp/nav-view")
-set_field(title="<appTitle>", field="appify-view-sidebar.1", value="MyApp/detail-view")
+<$action-appify-split app="AppTitle" slot="main.1" operation="set-condition" value="[statewrap-get[project]!is[blank]]"/>
+<$action-appify-split app="AppTitle" slot="main.1" operation="clear-condition"/>
+<$action-appify-split app="AppTitle" slot="main.0" operation="set-views" value='[{"view":"A","label":"Tab A"},{"view":"B","condition":"[filter]"}]'/>
 ```
+
+Available operations: `split-h`, `split-v`, `delete`, `set-view`, `set-condition`, `clear-condition`, `set-views`
 
 ## Creating a split
 
 1. Read current splits: get_tiddler on `$:/config/rimir/appify/splits/<appTitle>`
-2. Add/modify the JSON structure
+2. Add/modify the JSON structure (add `condition` or `views` as needed)
 3. Write it back with set_field(field="text")
-4. Set view bindings for the new panes
-
-## Removing a split
-
-Set the slot's split config to `null` or remove the key from the JSON.
 
 ## Deeper docs
 

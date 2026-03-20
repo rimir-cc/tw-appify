@@ -288,7 +288,7 @@ AppifyAppWidget.prototype.buildSlotContent = function(node, defaultView, editMod
 		return this.buildSplitContent(node, editMode, appTitle, address);
 	}
 	var view = (node && node.view !== undefined) ? node.view : defaultView;
-	return this.buildLeafContent(view, editMode, appTitle, address);
+	return this.buildLeafContent(view, editMode, appTitle, address, node);
 };
 
 AppifyAppWidget.prototype.buildSplitContent = function(node, editMode, appTitle, address) {
@@ -306,6 +306,87 @@ AppifyAppWidget.prototype.buildSplitContent = function(node, editMode, appTitle,
 	if(child0HasSplit) pane0Class += " appify-split-pane-nested";
 	if(child1HasSplit) pane1Class += " appify-split-pane-nested";
 
+	// Read conditions from child nodes
+	var cond0 = node.children[0] ? node.children[0].condition : null;
+	var cond1 = node.children[1] ? node.children[1].condition : null;
+
+	// For stacked views leaves: derive condition if all views have conditions
+	if(!cond0 && node.children[0] && node.children[0].views) {
+		cond0 = this.derivePaneCondition(node.children[0]);
+	}
+	if(!cond1 && node.children[1] && node.children[1].views) {
+		cond1 = this.derivePaneCondition(node.children[1]);
+	}
+
+	// Conditional panes: $list wraps the pane div entirely.
+	// When condition false: pane div removed from DOM, sibling fills via flex:1.
+	// When one pane has a condition, the non-conditional sibling gets flex:1 and
+	// the conditional pane gets a relative ratio (e.g. ratio=0.6 → flex:1 vs flex:0.667 → 60/40).
+	var flex0 = ratio, flex1 = 1 - ratio;
+	if(cond0 && !cond1) {
+		flex1 = 1;
+		flex0 = ratio / (1 - ratio);
+	} else if(cond1 && !cond0) {
+		flex0 = 1;
+		flex1 = (1 - ratio) / ratio;
+	}
+
+	var pane0Node = {
+		type: "element", tag: "div",
+		attributes: {
+			"class": { type: "string", value: pane0Class },
+			"style": { type: "string", value: "flex: " + flex0 + ";" }
+		},
+		children: child0
+	};
+	var pane1Node = {
+		type: "element", tag: "div",
+		attributes: {
+			"class": { type: "string", value: pane1Class },
+			"style": { type: "string", value: "flex: " + flex1 + ";" }
+		},
+		children: child1
+	};
+	var handleNode = {
+		type: "element", tag: "div",
+		attributes: {
+			"class": { type: "string", value: "appify-split-handle appify-split-handle-" + (isH ? "h" : "v") },
+			"data-split-path": { type: "string", value: address },
+			"data-appify-app": { type: "string", value: appTitle }
+		}
+	};
+
+	// Wrap conditional panes in $list (removed from DOM when condition false)
+	if(cond0) {
+		pane0Node = {
+			type: "list",
+			attributes: {
+				filter: { type: "string", value: cond0 + "+[limit[1]]" },
+				variable: { type: "string", value: "__cond__" }
+			},
+			children: [pane0Node]
+		};
+	}
+	if(cond1) {
+		pane1Node = {
+			type: "list",
+			attributes: {
+				filter: { type: "string", value: cond1 + "+[limit[1]]" },
+				variable: { type: "string", value: "__cond__" }
+			},
+			children: [pane1Node]
+		};
+	}
+
+	// Handle: hide when either conditional sibling is hidden (nested $list, no placeholder needed)
+	var handleResult = handleNode;
+	if(cond1) {
+		handleResult = { type: "list", attributes: { filter: { type: "string", value: cond1 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
+	}
+	if(cond0) {
+		handleResult = { type: "list", attributes: { filter: { type: "string", value: cond0 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
+	}
+
 	return [{
 		type: "element", tag: "div",
 		attributes: {
@@ -313,37 +394,34 @@ AppifyAppWidget.prototype.buildSplitContent = function(node, editMode, appTitle,
 			"data-split-path": { type: "string", value: address },
 			"data-appify-app": { type: "string", value: appTitle }
 		},
-		children: [
-			{
-				type: "element", tag: "div",
-				attributes: {
-					"class": { type: "string", value: pane0Class },
-					"style": { type: "string", value: "flex: " + ratio + ";" }
-				},
-				children: child0
-			},
-			{
-				type: "element", tag: "div",
-				attributes: {
-					"class": { type: "string", value: "appify-split-handle appify-split-handle-" + (isH ? "h" : "v") },
-					"data-split-path": { type: "string", value: address },
-					"data-appify-app": { type: "string", value: appTitle }
-				}
-			},
-			{
-				type: "element", tag: "div",
-				attributes: {
-					"class": { type: "string", value: pane1Class },
-					"style": { type: "string", value: "flex: " + (1 - ratio) + ";" }
-				},
-				children: child1
-			}
-		]
+		children: [pane0Node, handleResult, pane1Node]
 	}];
 };
 
-AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, appTitle, address) {
+// Derive a combined condition filter for a stacked-views leaf node.
+// Returns null if any view has no condition (always visible → pane always visible).
+// Otherwise returns a filter that produces output if at least one view's condition is met.
+AppifyAppWidget.prototype.derivePaneCondition = function(node) {
+	var views = node.views;
+	if(!views || !views.length) return null;
+	var conditions = [];
+	for(var i = 0; i < views.length; i++) {
+		if(!views[i].condition) return null; // at least one always-visible → pane always visible
+		conditions.push(views[i].condition);
+	}
+	// Combine: each condition is a separate filter run; TW appends all results.
+	// If ANY run produces output, the combined result is non-empty → $list renders.
+	// Wrap each in limit[1] to keep output minimal.
+	return conditions.map(function(c) { return c + "+[limit[1]]"; }).join(" ");
+};
+
+AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, appTitle, address, node) {
 	var content = [];
+
+	// Check for stacked views
+	if(node && node.views && node.views.length > 0) {
+		return this.buildStackedContent(node.views, editMode, appTitle, address);
+	}
 
 	if(editMode) {
 		// Build label with split/delete buttons via parsed wikitext
@@ -417,6 +495,101 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 	}
 
 	return content;
+};
+
+// Build content for a leaf with stacked views (tab groups).
+// views: array of {view, label, condition}
+AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTitle, address) {
+	var esc = function(s) { return s.replace(/"/g, "&quot;"); };
+	var tabStateTiddler = "$:/state/rimir/appify/tab/" + appTitle + "/" + address;
+	var wt = "";
+
+	if(editMode) {
+		// Edit mode: show label bar with stacked indicator
+		var isSubSlot = address.indexOf(".") !== -1;
+		wt += '<div class="appify-slot-label">' +
+			'<span class="appify-slot-label-text">' + address +
+			'<span class="appify-slot-label-tiddler"> \u2192 [' + views.length + ' stacked views]</span></span>' +
+			'<span class="appify-slot-actions">' +
+			'<$button class="appify-split-btn" tooltip="Split horizontal">' +
+			'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="split-h"/>' +
+			'\u2194</$button>' +
+			'<$button class="appify-split-btn" tooltip="Split vertical">' +
+			'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="split-v"/>' +
+			'\u2195</$button>';
+		if(isSubSlot) {
+			wt += '<$button class="appify-split-btn appify-split-btn-delete" tooltip="Remove this pane">' +
+				'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="delete"/>' +
+				'\u2715</$button>';
+		}
+		wt += '</span></div>';
+
+		// Show each view entry with condition info
+		wt += '<div class="appify-stacked-edit-list">';
+		for(var i = 0; i < views.length; i++) {
+			var v = views[i];
+			var label = v.label || (v.view ? v.view.split("/").pop() : "empty");
+			wt += '<div class="appify-stacked-edit-item">' +
+				'<span class="appify-stacked-edit-label">' + label + '</span>' +
+				' <span class="appify-stacked-edit-view">' + (v.view || "(no view)") + '</span>';
+			if(v.condition) {
+				wt += ' <span class="appify-stacked-edit-cond" title="' + esc(v.condition) + '">\u26A1</span>';
+			}
+			wt += '</div>';
+		}
+		wt += '</div>';
+	} else {
+		// View mode: tab bar + content panels.
+		// $list wraps conditional views, $reveal switches active tab.
+		// Tab bar auto-hides via CSS :only-child when a single tab is visible.
+
+		// Default tab: first unconditional view, or first view
+		var defaultView = views[0].view || "";
+		for(var d = 0; d < views.length; d++) {
+			if(!views[d].condition) { defaultView = views[d].view || ""; break; }
+		}
+
+		// All $reveal widgets get default=defaultView so the first view shows
+		// when the state tiddler doesn't exist yet.
+		wt += '<div class="appify-tab-bar">';
+		for(var t = 0; t < views.length; t++) {
+			var tv = views[t];
+			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
+			var tabBtn = '<$button class="appify-tab-btn" ' +
+				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv.view || "") + '">' +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv.view || "") + '" default="' + esc(defaultView) + '">' +
+				'<span class="appify-tab-active">' + tLabel + '</span>' +
+				'</$reveal>' +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv.view || "") + '" default="' + esc(defaultView) + '">' +
+				tLabel +
+				'</$reveal>' +
+				'</$button>';
+			if(tv.condition) {
+				wt += '<$list filter="' + esc(tv.condition) + '">' + tabBtn + '</$list>';
+			} else {
+				wt += tabBtn;
+			}
+		}
+		wt += '</div>';
+
+		// Build content panels
+		wt += '<div class="appify-tab-content">';
+		for(var p = 0; p < views.length; p++) {
+			var pv = views[p];
+			var panel = '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv.view || "") + '" default="' + esc(defaultView) + '">' +
+				(pv.view ? '<$transclude $tiddler="' + esc(pv.view) + '"/>' : '') +
+				'</$reveal>';
+			if(pv.condition) {
+				wt += '<$list filter="' + esc(pv.condition) + '">' + panel + '</$list>';
+			} else {
+				wt += panel;
+			}
+		}
+		wt += '</div>';
+	}
+
+	var parsed = this.wiki.parseText("text/vnd.tiddlywiki", wt, { parseAsInline: false });
+	return (parsed && parsed.tree) ? parsed.tree : [];
 };
 
 AppifyAppWidget.prototype.refresh = function(changedTiddlers) {

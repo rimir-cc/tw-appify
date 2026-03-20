@@ -1,0 +1,50 @@
+created: 20260320120000000
+modified: 20260320120000000
+title: $:/plugins/rimir/appify/samples/cond-sidebar
+type: text/vnd.tiddlywiki
+
+<div class="appify-demo-nav">
+
+!! Projects
+
+<$list filter="Alpha Bravo Charlie Delta">
+<$button class={{{ [statewrap-get[project]match<currentTiddler>then[appify-demo-nav-item appify-demo-nav-active]else[appify-demo-nav-item]] }}}>
+<$action-statewrap-set channel="project" value=<<currentTiddler>>/>
+<<currentTiddler>>
+</$button>
+</$list>
+
+<%if [statewrap-get[project]!is[blank]]%>
+
+---
+
+<$button class="appify-demo-nav-item">
+<$action-statewrap-set channel="project" value=""/>
+Clear selection
+</$button>
+
+<%endif%>
+
+</div>
+
+<style>
+.appify-demo-nav-item {
+    display: block;
+    width: 100%;
+    padding: 6px 10px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+.appify-demo-nav-item:hover {
+    background: rgba(0,0,0,0.05);
+}
+.appify-demo-nav-active {
+    background: rgba(0,0,0,0.08);
+    font-weight: bold;
+}
+</style>

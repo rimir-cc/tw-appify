@@ -1,0 +1,15 @@
+created: 20260320120000000
+modified: 20260320120000000
+title: $:/plugins/rimir/appify/samples/cond-budget
+type: text/vnd.tiddlywiki
+
+!! Budget
+
+Budget for ''<$text text={{{[statewrap-get[project]]}}}/>''
+
+This panel is only visible when the selected project has budget data.
+
+* Alpha → "50k" (visible)
+* Bravo → (no budget — this tab hidden)
+* Charlie → "120k" (visible)
+* Delta → (no budget — this tab hidden)

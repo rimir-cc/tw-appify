@@ -1,0 +1,22 @@
+title: $:/config/rimir/appify/splits/$:/plugins/rimir/appify/samples/cond-app
+type: application/json
+
+{
+  "main": {
+    "direction": "horizontal",
+    "ratio": 0.6,
+    "children": [
+      {
+        "views": [
+          { "view": "$:/plugins/rimir/appify/samples/cond-overview", "label": "Overview" },
+          { "view": "$:/plugins/rimir/appify/samples/cond-team", "label": "Team", "condition": "[statewrap-get[project]addprefix[$:/plugins/rimir/appify/samples/cond-data/]get[team]!is[blank]]" },
+          { "view": "$:/plugins/rimir/appify/samples/cond-budget", "label": "Budget", "condition": "[statewrap-get[project]addprefix[$:/plugins/rimir/appify/samples/cond-data/]get[budget]!is[blank]]" }
+        ]
+      },
+      {
+        "view": "$:/plugins/rimir/appify/samples/cond-detail",
+        "condition": "[statewrap-get[project]!is[blank]]"
+      }
+    ]
+  }
+}
