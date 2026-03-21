@@ -20,6 +20,8 @@ var Widget = require("$:/core/modules/widgets/widget.js").widget;
 var EDIT_MODE_TIDDLER = "$:/state/rimir/appify/edit-mode";
 var SPLITS_CHANGED_TIDDLER = "$:/temp/rimir/appify/splits-changed";
 
+function esc(s) { return s.replace(/"/g, "&quot;"); }
+
 var AppifyAppWidget = function(parseTreeNode, options) {
 	this.initialise(parseTreeNode, options);
 };
@@ -197,8 +199,7 @@ AppifyAppWidget.prototype.execute = function() {
 		}
 
 		// Modal trigger buttons (always shown in edit mode)
-		var escAttr = function(s) { return s.replace(/"/g, "&quot;"); };
-		var escApp = escAttr(appTitle);
+		var escApp = esc(appTitle);
 		var btnWt = '<span class="appify-debug-actions">' +
 			'<$button class="appify-debug-btn" tooltip="Channel editor">' +
 			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-channels" app="' + escApp + '"/>' +
@@ -212,7 +213,7 @@ AppifyAppWidget.prototype.execute = function() {
 			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-debug" app="' + escApp + '"/>' +
 			'\uD83D\uDD0D</$button>' +
 			'<$button class="appify-debug-btn" tooltip="Clone app">' +
-			'<$action-setfield $tiddler="$:/state/rimir/appify/clone-name" text="' + escAttr((fields.caption || "App") + " (copy)") + '"/>' +
+			'<$action-setfield $tiddler="$:/state/rimir/appify/clone-name" text="' + esc((fields.caption || "App") + " (copy)") + '"/>' +
 			'<$action-sendmessage $message="tm-modal" $param="$:/plugins/rimir/appify/ui/modal-clone" app="' + escApp + '"/>' +
 			'\u29C9</$button>' +
 			'<$button class="appify-debug-btn appify-debug-btn-danger" tooltip="Delete app">' +
@@ -254,7 +255,7 @@ AppifyAppWidget.prototype.execute = function() {
 	if(editMode) {
 		var editStateTitle = "$:/state/rimir/appify/edit-target/" + appTitle;
 
-		var overlayWt = '<$let app="' + escAttr(appTitle) + '">' +
+		var overlayWt = '<$let app="' + esc(appTitle) + '">' +
 			'<$transclude $tiddler="$:/plugins/rimir/appify/ui/edit-overlay"/>' +
 			'</$let>';
 
@@ -466,7 +467,6 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 		// paragraph wrappers from multiple separate parse operations.
 		var isSubSlot = address.indexOf(".") !== -1;
 		var viewLabel = viewTiddler ? " \u2192 " + viewTiddler : "";
-		var esc = function(s) { return s.replace(/"/g, "&quot;"); };
 		var condition = (node && node.condition) ? node.condition : "";
 
 		var wt = '<div class="appify-slot-label">' +
@@ -530,7 +530,6 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 // Build content for a leaf with stacked views (tab groups).
 // views: array of {view, label, condition}
 AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTitle, address) {
-	var esc = function(s) { return s.replace(/"/g, "&quot;"); };
 	var tabStateTiddler = "$:/state/rimir/appify/tab/" + appTitle + "/" + address;
 	var defaultView = views[0].view || "";
 	var wt = "";
@@ -567,24 +566,17 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 			var tv = views[t];
 			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
 			if(tv.condition) tLabel += ' \u26A1';
-			wt += '<$button class="appify-tab-btn" ' +
-				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv.view || ("__tab_" + t)) + '">' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '">' +
-				'<span class="appify-tab-active">' + tLabel + '</span>' +
-				'</$reveal>' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '">' +
-				tLabel +
-				'</$reveal>' +
-				'</$button>';
+			wt += '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" stateTiddler="' + esc(tabStateTiddler) +
+				'" value="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '" label="' + esc(tLabel) + '"/>';
 		}
 		wt += '</div>';
 
-		// Tab content panels with editors
-		wt += '<div class="appify-tab-content appify-tab-content-edit">';
+		// Tab content panels with editors (newlines for block-level parsing)
+		wt += '\n<div class="appify-tab-content appify-tab-content-edit">\n';
 		for(var p = 0; p < views.length; p++) {
 			var pv = views[p];
 			var pvId = pv.view || ("__tab_" + p);
-			wt += '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pvId) + '" default="' + esc(defaultView) + '">';
+			wt += '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pvId) + '" default="' + esc(defaultView) + '">\n';
 
 			// Action buttons: edit + clone
 			if(pv.view) {
@@ -595,22 +587,22 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 					'<$button class="appify-split-btn" tooltip="Clone view to app namespace">' +
 					'<$action-appify-clone-view app="' + esc(appTitle) + '" slot="' + esc(address) + '" tiddler="' + esc(pv.view) + '" index="' + p + '"/>' +
 					'\u29C9</$button>' +
-					'</div>';
+					'</div>\n';
 			}
 
 			// View selector (with current view preselected)
 			var stackTemp = "$:/temp/rimir/appify/view-input/" + address + "." + p;
-			wt += this.buildViewSelector(esc, appTitle, address, stackTemp, pv.view || "", "set-stack-view", p);
+			wt += this.buildViewSelector(esc, appTitle, address, stackTemp, pv.view || "", "set-stack-view", p) + '\n';
 
 			// Condition editor for this view
-			wt += this.buildConditionEditor(esc, appTitle, address, pv.condition || "", "set-view-condition", p);
+			wt += this.buildConditionEditor(esc, appTitle, address, pv.condition || "", "set-view-condition", p) + '\n';
 
 			// Editor textarea
 			if(pv.view) {
-				wt += '<$edit-text tiddler="' + esc(pv.view) + '" field="text" tag="textarea" class="appify-editor-textarea" default=""/>';
+				wt += '<$edit-text tiddler="' + esc(pv.view) + '" field="text" tag="textarea" class="appify-editor-textarea" default=""/>\n';
 			}
 
-			wt += '</$reveal>';
+			wt += '</$reveal>\n';
 		}
 		wt += '</div>';
 	} else {
@@ -627,15 +619,8 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		for(var t2 = 0; t2 < views.length; t2++) {
 			var tv2 = views[t2];
 			var tLabel2 = tv2.label || (tv2.view ? tv2.view.split("/").pop() : "Tab " + t2);
-			var tabBtn = '<$button class="appify-tab-btn" ' +
-				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv2.view || "") + '">' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '">' +
-				'<span class="appify-tab-active">' + tLabel2 + '</span>' +
-				'</$reveal>' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '">' +
-				tLabel2 +
-				'</$reveal>' +
-				'</$button>';
+			var tabBtn = '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" stateTiddler="' + esc(tabStateTiddler) +
+				'" value="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '" label="' + esc(tLabel2) + '"/>';
 			if(tv2.condition) {
 				wt += '<$list filter="' + esc(tv2.condition) + '">' + tabBtn + '</$list>';
 			} else {
@@ -644,15 +629,16 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		}
 		wt += '</div>';
 
-		// Build content panels
-		wt += '<div class="appify-tab-content">';
+		// Build content panels — tag="div" on $reveal forces block context,
+		// $mode="block" on $transclude forces block-level parsing of view content
+		wt += '\n<div class="appify-tab-content">\n';
 		for(var p2 = 0; p2 < views.length; p2++) {
 			var pv2 = views[p2];
-			var panel = '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv2.view || "") + '" default="' + esc(defaultView) + '">' +
-				(pv2.view ? '<$transclude $tiddler="' + esc(pv2.view) + '"/>' : '') +
-				'</$reveal>';
+			var panel = '<$reveal tag="div" stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv2.view || "") + '" default="' + esc(defaultView) + '">\n' +
+				(pv2.view ? '<$transclude $tiddler="' + esc(pv2.view) + '" $mode="block"/>\n' : '') +
+				'</$reveal>\n';
 			if(pv2.condition) {
-				wt += '<$list filter="' + esc(pv2.condition) + '">' + panel + '</$list>';
+				wt += '<$list filter="' + esc(pv2.condition) + '">\n' + panel + '</$list>\n';
 			} else {
 				wt += panel;
 			}

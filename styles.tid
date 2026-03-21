@@ -814,40 +814,6 @@ type: text/vnd.tiddlywiki
     flex: 1;
 }
 
-/* Stacked views: edit mode list */
-
-.appify-stacked-edit-list {
-    padding: 8px 12px;
-    font-size: 13px;
-}
-
-.appify-stacked-edit-item {
-    padding: 4px 0;
-    border-bottom: 1px solid <<colour tiddler-border>>;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.appify-stacked-edit-item:last-child {
-    border-bottom: none;
-}
-
-.appify-stacked-edit-label {
-    font-weight: bold;
-    color: <<colour primary>>;
-}
-
-.appify-stacked-edit-view {
-    font-family: "SFMono-Regular", "Consolas", monospace;
-    font-size: 12px;
-    color: <<colour muted-foreground>>;
-}
-
-.appify-stacked-edit-cond {
-    cursor: help;
-    font-size: 14px;
-}
 
 /* === LLM Chat FAB button === */
 
