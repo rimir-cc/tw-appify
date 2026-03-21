@@ -306,47 +306,6 @@ AppifyAppWidget.prototype.buildSplitContent = function(node, editMode, appTitle,
 	if(child0HasSplit) pane0Class += " appify-split-pane-nested";
 	if(child1HasSplit) pane1Class += " appify-split-pane-nested";
 
-	// Read conditions from child nodes
-	var cond0 = node.children[0] ? node.children[0].condition : null;
-	var cond1 = node.children[1] ? node.children[1].condition : null;
-
-	// For stacked views leaves: derive condition if all views have conditions
-	if(!cond0 && node.children[0] && node.children[0].views) {
-		cond0 = this.derivePaneCondition(node.children[0]);
-	}
-	if(!cond1 && node.children[1] && node.children[1].views) {
-		cond1 = this.derivePaneCondition(node.children[1]);
-	}
-
-	// Conditional panes: $list wraps the pane div entirely.
-	// When condition false: pane div removed from DOM, sibling fills via flex:1.
-	// When one pane has a condition, the non-conditional sibling gets flex:1 and
-	// the conditional pane gets a relative ratio (e.g. ratio=0.6 → flex:1 vs flex:0.667 → 60/40).
-	var flex0 = ratio, flex1 = 1 - ratio;
-	if(cond0 && !cond1) {
-		flex1 = 1;
-		flex0 = ratio / (1 - ratio);
-	} else if(cond1 && !cond0) {
-		flex0 = 1;
-		flex1 = (1 - ratio) / ratio;
-	}
-
-	var pane0Node = {
-		type: "element", tag: "div",
-		attributes: {
-			"class": { type: "string", value: pane0Class },
-			"style": { type: "string", value: "flex: " + flex0 + ";" }
-		},
-		children: child0
-	};
-	var pane1Node = {
-		type: "element", tag: "div",
-		attributes: {
-			"class": { type: "string", value: pane1Class },
-			"style": { type: "string", value: "flex: " + flex1 + ";" }
-		},
-		children: child1
-	};
 	var handleNode = {
 		type: "element", tag: "div",
 		attributes: {
@@ -356,35 +315,87 @@ AppifyAppWidget.prototype.buildSplitContent = function(node, editMode, appTitle,
 		}
 	};
 
-	// Wrap conditional panes in $list (removed from DOM when condition false)
-	if(cond0) {
-		pane0Node = {
-			type: "list",
-			attributes: {
-				filter: { type: "string", value: cond0 + "+[limit[1]]" },
-				variable: { type: "string", value: "__cond__" }
-			},
-			children: [pane0Node]
-		};
-	}
-	if(cond1) {
-		pane1Node = {
-			type: "list",
-			attributes: {
-				filter: { type: "string", value: cond1 + "+[limit[1]]" },
-				variable: { type: "string", value: "__cond__" }
-			},
-			children: [pane1Node]
-		};
-	}
+	var pane0Node, pane1Node, handleResult;
 
-	// Handle: hide when either conditional sibling is hidden (nested $list, no placeholder needed)
-	var handleResult = handleNode;
-	if(cond1) {
-		handleResult = { type: "list", attributes: { filter: { type: "string", value: cond1 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
-	}
-	if(cond0) {
-		handleResult = { type: "list", attributes: { filter: { type: "string", value: cond0 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
+	if(editMode) {
+		// Edit mode: show ALL panes regardless of conditions (maximal layout)
+		pane0Node = {
+			type: "element", tag: "div",
+			attributes: {
+				"class": { type: "string", value: pane0Class },
+				"style": { type: "string", value: "flex: " + ratio + ";" }
+			},
+			children: child0
+		};
+		pane1Node = {
+			type: "element", tag: "div",
+			attributes: {
+				"class": { type: "string", value: pane1Class },
+				"style": { type: "string", value: "flex: " + (1 - ratio) + ";" }
+			},
+			children: child1
+		};
+		handleResult = handleNode;
+	} else {
+		// View mode: conditional panes wrapped in $list, flex normalized
+		var cond0 = node.children[0] ? node.children[0].condition : null;
+		var cond1 = node.children[1] ? node.children[1].condition : null;
+
+		if(!cond0 && node.children[0] && node.children[0].views) {
+			cond0 = this.derivePaneCondition(node.children[0]);
+		}
+		if(!cond1 && node.children[1] && node.children[1].views) {
+			cond1 = this.derivePaneCondition(node.children[1]);
+		}
+
+		var flex0 = ratio, flex1 = 1 - ratio;
+		if(cond0 && !cond1) {
+			flex1 = 1;
+			flex0 = ratio / (1 - ratio);
+		} else if(cond1 && !cond0) {
+			flex0 = 1;
+			flex1 = (1 - ratio) / ratio;
+		}
+
+		pane0Node = {
+			type: "element", tag: "div",
+			attributes: {
+				"class": { type: "string", value: pane0Class },
+				"style": { type: "string", value: "flex: " + flex0 + ";" }
+			},
+			children: child0
+		};
+		pane1Node = {
+			type: "element", tag: "div",
+			attributes: {
+				"class": { type: "string", value: pane1Class },
+				"style": { type: "string", value: "flex: " + flex1 + ";" }
+			},
+			children: child1
+		};
+
+		if(cond0) {
+			pane0Node = {
+				type: "list",
+				attributes: { filter: { type: "string", value: cond0 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } },
+				children: [pane0Node]
+			};
+		}
+		if(cond1) {
+			pane1Node = {
+				type: "list",
+				attributes: { filter: { type: "string", value: cond1 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } },
+				children: [pane1Node]
+			};
+		}
+
+		handleResult = handleNode;
+		if(cond1) {
+			handleResult = { type: "list", attributes: { filter: { type: "string", value: cond1 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
+		}
+		if(cond0) {
+			handleResult = { type: "list", attributes: { filter: { type: "string", value: cond0 + "+[limit[1]]" }, variable: { type: "string", value: "__cond__" } }, children: [handleResult] };
+		}
 	}
 
 	return [{
@@ -415,6 +426,33 @@ AppifyAppWidget.prototype.derivePaneCondition = function(node) {
 	return conditions.map(function(c) { return c + "+[limit[1]]"; }).join(" ");
 };
 
+// Helper: build condition editor via transcluded template (ui/edit-condition.tid).
+// Pre-populates temp tiddler with current condition to stay in sync with config.
+AppifyAppWidget.prototype.buildConditionEditor = function(esc, appTitle, address, currentCondition, operation, indexAttr) {
+	var condTemp = "$:/temp/rimir/appify/condition-input/" + address + (indexAttr !== undefined ? "." + indexAttr : "");
+	if(currentCondition) {
+		this.wiki.setText(condTemp, "text", null, currentCondition);
+	}
+	var clearOp = operation.replace("set-", "clear-");
+	var idx = (indexAttr !== undefined) ? "" + indexAttr : "-1";
+	return '<$transclude $tiddler="$:/plugins/rimir/appify/ui/edit-condition" app="' + esc(appTitle) +
+		'" slot="' + esc(address) + '" temp="' + esc(condTemp) +
+		'" operation="' + operation + '" clearOperation="' + clearOp + '" index="' + idx + '"/>';
+};
+
+// Helper: build view selector via transcluded template (ui/edit-view-selector.tid).
+// Pre-populates temp tiddler with current view to show it preselected in the dropdown.
+// For stacked views, pass operation="set-stack-view" and index to target a specific view entry.
+AppifyAppWidget.prototype.buildViewSelector = function(esc, appTitle, address, tempTiddler, currentView, operation, index) {
+	if(currentView) {
+		this.wiki.setText(tempTiddler, "text", null, currentView);
+	}
+	var attrs = ' app="' + esc(appTitle) + '" slot="' + esc(address) + '" temp="' + esc(tempTiddler) + '"';
+	if(operation) attrs += ' operation="' + operation + '"';
+	if(index !== undefined) attrs += ' index="' + index + '"';
+	return '<$transclude $tiddler="$:/plugins/rimir/appify/ui/edit-view-selector"' + attrs + '/>';
+};
+
 AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, appTitle, address, node) {
 	var content = [];
 
@@ -424,10 +462,12 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 	}
 
 	if(editMode) {
-		// Build label with split/delete buttons via parsed wikitext
+		// Build all edit-mode content as a single wikitext string to avoid
+		// paragraph wrappers from multiple separate parse operations.
 		var isSubSlot = address.indexOf(".") !== -1;
 		var viewLabel = viewTiddler ? " \u2192 " + viewTiddler : "";
 		var esc = function(s) { return s.replace(/"/g, "&quot;"); };
+		var condition = (node && node.condition) ? node.condition : "";
 
 		var wt = '<div class="appify-slot-label">' +
 			'<span class="appify-slot-label-text">' + address + '<span class="appify-slot-label-tiddler">' + viewLabel + '</span></span>' +
@@ -436,7 +476,10 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 		if(viewTiddler) {
 			wt += '<$button class="appify-split-btn" tooltip="Edit view tiddler">' +
 				'<$action-appify-edit app="' + esc(appTitle) + '" tiddler="' + esc(viewTiddler) + '" operation="open"/>' +
-				'\u270E</$button>';
+				'\u270E</$button>' +
+				'<$button class="appify-split-btn" tooltip="Clone view to app namespace">' +
+				'<$action-appify-clone-view app="' + esc(appTitle) + '" slot="' + esc(address) + '" tiddler="' + esc(viewTiddler) + '"/>' +
+				'\u29C9</$button>';
 		}
 
 		wt += '<$button class="appify-split-btn" tooltip="Split horizontal">' +
@@ -453,36 +496,23 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 		}
 		wt += '</span></div>';
 
-		var labelParsed = this.wiki.parseText("text/vnd.tiddlywiki", wt, { parseAsInline: false });
-		if(labelParsed && labelParsed.tree) {
-			content = content.concat(labelParsed.tree);
+		// Condition editor (for pane-level conditions)
+		if(isSubSlot) {
+			wt += this.buildConditionEditor(esc, appTitle, address, condition, "set-condition");
 		}
 
-		// Editor or view-input for empty slots
+		// View selector (always shown, with current view preselected)
+		var tempTiddler = "$:/temp/rimir/appify/view-input/" + address;
+		wt += this.buildViewSelector(esc, appTitle, address, tempTiddler, viewTiddler || "");
+
+		// Editor textarea (only when view is assigned)
 		if(viewTiddler) {
-			content.push({
-				type: "edit-text",
-				attributes: {
-					tiddler: { type: "string", value: viewTiddler },
-					field: { type: "string", value: "text" },
-					tag: { type: "string", value: "textarea" },
-					"class": { type: "string", value: "appify-editor-textarea" },
-					"default": { type: "string", value: "" }
-				}
-			});
-		} else {
-			var tempTiddler = "$:/temp/rimir/appify/view-input/" + address;
-			var inputWt = '<div class="appify-view-input-container">' +
-				'<$edit-text tiddler="' + esc(tempTiddler) + '" field="text" tag="input" ' +
-				'placeholder="Enter tiddler title..." class="appify-view-input"/>' +
-				'<$button class="appify-split-btn appify-split-btn-apply">' +
-				'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" ' +
-				'operation="set-view" value={{' + tempTiddler + '}}/>' +
-				'Apply</$button></div>';
-			var inputParsed = this.wiki.parseText("text/vnd.tiddlywiki", inputWt, { parseAsInline: false });
-			if(inputParsed && inputParsed.tree) {
-				content = content.concat(inputParsed.tree);
-			}
+			wt += '<$edit-text tiddler="' + esc(viewTiddler) + '" field="text" tag="textarea" class="appify-editor-textarea" default=""/>';
+		}
+
+		var parsed = this.wiki.parseText("text/vnd.tiddlywiki", wt, { parseAsInline: false });
+		if(parsed && parsed.tree) {
+			content = content.concat(parsed.tree);
 		}
 	} else {
 		// View mode
@@ -502,15 +532,22 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTitle, address) {
 	var esc = function(s) { return s.replace(/"/g, "&quot;"); };
 	var tabStateTiddler = "$:/state/rimir/appify/tab/" + appTitle + "/" + address;
+	var defaultView = views[0].view || "";
 	var wt = "";
 
 	if(editMode) {
-		// Edit mode: show label bar with stacked indicator
+		// Edit mode: functional tabs with editors per view
 		var isSubSlot = address.indexOf(".") !== -1;
-		wt += '<div class="appify-slot-label">' +
+
+		// Label bar (pencil opens edit overlay for the currently active tab)
+		wt += '<$set name="__activeView__" filter="[[' + esc(tabStateTiddler) + ']get[text]else[' + esc(defaultView) + ']]" select="0">' +
+			'<div class="appify-slot-label">' +
 			'<span class="appify-slot-label-text">' + address +
-			'<span class="appify-slot-label-tiddler"> \u2192 [' + views.length + ' stacked views]</span></span>' +
+			'<span class="appify-slot-label-tiddler"> \u2192 [stacked]</span></span>' +
 			'<span class="appify-slot-actions">' +
+			'<$button class="appify-split-btn" tooltip="Edit active view tiddler">' +
+			'<$action-appify-edit app="' + esc(appTitle) + '" tiddler=<<__activeView__>> operation="open"/>' +
+			'\u270E</$button>' +
 			'<$button class="appify-split-btn" tooltip="Split horizontal">' +
 			'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="split-h"/>' +
 			'\u2194</$button>' +
@@ -522,29 +559,64 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 				'<$action-appify-split app="' + esc(appTitle) + '" slot="' + esc(address) + '" operation="delete"/>' +
 				'\u2715</$button>';
 		}
-		wt += '</span></div>';
+		wt += '</span></div></$set>';
 
-		// Show each view entry with condition info
-		wt += '<div class="appify-stacked-edit-list">';
-		for(var i = 0; i < views.length; i++) {
-			var v = views[i];
-			var label = v.label || (v.view ? v.view.split("/").pop() : "empty");
-			wt += '<div class="appify-stacked-edit-item">' +
-				'<span class="appify-stacked-edit-label">' + label + '</span>' +
-				' <span class="appify-stacked-edit-view">' + (v.view || "(no view)") + '</span>';
-			if(v.condition) {
-				wt += ' <span class="appify-stacked-edit-cond" title="' + esc(v.condition) + '">\u26A1</span>';
+		// Tab bar (all views, no condition filtering in edit mode)
+		wt += '<div class="appify-tab-bar appify-tab-bar-edit">';
+		for(var t = 0; t < views.length; t++) {
+			var tv = views[t];
+			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
+			if(tv.condition) tLabel += ' \u26A1';
+			wt += '<$button class="appify-tab-btn" ' +
+				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv.view || ("__tab_" + t)) + '">' +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '">' +
+				'<span class="appify-tab-active">' + tLabel + '</span>' +
+				'</$reveal>' +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '">' +
+				tLabel +
+				'</$reveal>' +
+				'</$button>';
+		}
+		wt += '</div>';
+
+		// Tab content panels with editors
+		wt += '<div class="appify-tab-content appify-tab-content-edit">';
+		for(var p = 0; p < views.length; p++) {
+			var pv = views[p];
+			var pvId = pv.view || ("__tab_" + p);
+			wt += '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pvId) + '" default="' + esc(defaultView) + '">';
+
+			// Action buttons: edit + clone
+			if(pv.view) {
+				wt += '<div class="appify-stacked-view-actions">' +
+					'<$button class="appify-split-btn" tooltip="Edit view tiddler">' +
+					'<$action-appify-edit app="' + esc(appTitle) + '" tiddler="' + esc(pv.view) + '" operation="open"/>' +
+					'\u270E</$button>' +
+					'<$button class="appify-split-btn" tooltip="Clone view to app namespace">' +
+					'<$action-appify-clone-view app="' + esc(appTitle) + '" slot="' + esc(address) + '" tiddler="' + esc(pv.view) + '" index="' + p + '"/>' +
+					'\u29C9</$button>' +
+					'</div>';
 			}
-			wt += '</div>';
+
+			// View selector (with current view preselected)
+			var stackTemp = "$:/temp/rimir/appify/view-input/" + address + "." + p;
+			wt += this.buildViewSelector(esc, appTitle, address, stackTemp, pv.view || "", "set-stack-view", p);
+
+			// Condition editor for this view
+			wt += this.buildConditionEditor(esc, appTitle, address, pv.condition || "", "set-view-condition", p);
+
+			// Editor textarea
+			if(pv.view) {
+				wt += '<$edit-text tiddler="' + esc(pv.view) + '" field="text" tag="textarea" class="appify-editor-textarea" default=""/>';
+			}
+
+			wt += '</$reveal>';
 		}
 		wt += '</div>';
 	} else {
 		// View mode: tab bar + content panels.
 		// $list wraps conditional views, $reveal switches active tab.
 		// Tab bar auto-hides via CSS :only-child when a single tab is visible.
-
-		// Default tab: first unconditional view, or first view
-		var defaultView = views[0].view || "";
 		for(var d = 0; d < views.length; d++) {
 			if(!views[d].condition) { defaultView = views[d].view || ""; break; }
 		}
@@ -552,20 +624,20 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		// All $reveal widgets get default=defaultView so the first view shows
 		// when the state tiddler doesn't exist yet.
 		wt += '<div class="appify-tab-bar">';
-		for(var t = 0; t < views.length; t++) {
-			var tv = views[t];
-			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
+		for(var t2 = 0; t2 < views.length; t2++) {
+			var tv2 = views[t2];
+			var tLabel2 = tv2.label || (tv2.view ? tv2.view.split("/").pop() : "Tab " + t2);
 			var tabBtn = '<$button class="appify-tab-btn" ' +
-				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv.view || "") + '">' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv.view || "") + '" default="' + esc(defaultView) + '">' +
-				'<span class="appify-tab-active">' + tLabel + '</span>' +
+				'set="' + esc(tabStateTiddler) + '" setTo="' + esc(tv2.view || "") + '">' +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '">' +
+				'<span class="appify-tab-active">' + tLabel2 + '</span>' +
 				'</$reveal>' +
-				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv.view || "") + '" default="' + esc(defaultView) + '">' +
-				tLabel +
+				'<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="nomatch" text="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '">' +
+				tLabel2 +
 				'</$reveal>' +
 				'</$button>';
-			if(tv.condition) {
-				wt += '<$list filter="' + esc(tv.condition) + '">' + tabBtn + '</$list>';
+			if(tv2.condition) {
+				wt += '<$list filter="' + esc(tv2.condition) + '">' + tabBtn + '</$list>';
 			} else {
 				wt += tabBtn;
 			}
@@ -574,13 +646,13 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 
 		// Build content panels
 		wt += '<div class="appify-tab-content">';
-		for(var p = 0; p < views.length; p++) {
-			var pv = views[p];
-			var panel = '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv.view || "") + '" default="' + esc(defaultView) + '">' +
-				(pv.view ? '<$transclude $tiddler="' + esc(pv.view) + '"/>' : '') +
+		for(var p2 = 0; p2 < views.length; p2++) {
+			var pv2 = views[p2];
+			var panel = '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv2.view || "") + '" default="' + esc(defaultView) + '">' +
+				(pv2.view ? '<$transclude $tiddler="' + esc(pv2.view) + '"/>' : '') +
 				'</$reveal>';
-			if(pv.condition) {
-				wt += '<$list filter="' + esc(pv.condition) + '">' + panel + '</$list>';
+			if(pv2.condition) {
+				wt += '<$list filter="' + esc(pv2.condition) + '">' + panel + '</$list>';
 			} else {
 				wt += panel;
 			}

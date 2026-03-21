@@ -6,7 +6,7 @@ type: text/vnd.tiddlywiki
 
 # View Tiddlers
 
-View tiddlers are regular wikitext tiddlers that render inside layout slots. They are assigned via `appify-view-<slot>` fields on the app tiddler.
+View tiddlers are wikitext tiddlers that render inside layout slots. They should be tagged with `$:/tags/rimir/appify/view` so the edit-mode view selector can discover them. Views are assigned via `appify-view-<slot>` fields on the app tiddler or via the `views` array in the splits config JSON.
 
 ## Binding a view to a slot
 
@@ -74,6 +74,20 @@ This pattern stores data in macros keyed by channel value.
 3. Write updated wikitext with set_field(field="text", value="new wikitext")
 
 Important: Preserve the existing patterns. If a view uses `\define` macros for data, add new entries in the same pattern. If it uses `$list filter="..."`, add items to that filter.
+
+## Creating a new view
+
+1. Create a tiddler with `type: text/vnd.tiddlywiki` and tag `$:/tags/rimir/appify/view`
+2. Write wikitext using statewrap channels for reactivity
+3. Assign it to a slot via the edit-mode view selector dropdown, or by writing the splits config JSON
+
+## Cloning a view
+
+Use `<$action-appify-clone-view>` to clone an existing view into the user's namespace:
+```
+<$action-appify-clone-view app="AppTitle" slot="main.0" tiddler="SourceView"/>
+```
+This creates a copy at `<clone-prefix>/views/<baseName>`, adds the view tag, and updates the split config reference. Available as a button (⧉) in edit mode.
 
 ## Deeper docs
 

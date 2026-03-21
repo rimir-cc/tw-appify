@@ -1,0 +1,14 @@
+title: $:/plugins/rimir/appify/ui/edit-condition
+type: text/vnd.tiddlywiki
+
+\parameters(app, slot, temp, operation, clearOperation, index:"-1")
+<div class="appify-condition-editor">
+<span class="appify-condition-label">Condition:</span>
+<$edit-text tiddler=<<temp>> field="text" tag="input" placeholder="(none — always visible)" class="appify-condition-input"/>
+<$button class="appify-split-btn" tooltip="Apply condition">
+<$action-appify-split app=<<app>> slot=<<slot>> operation=<<operation>> index=<<index>> value={{{ [<temp>get[text]] }}}/>
+✓</$button>
+<$button class="appify-split-btn" tooltip="Clear condition">
+<$action-appify-split app=<<app>> slot=<<slot>> operation=<<clearOperation>> index=<<index>>/>
+✕</$button>
+</div>

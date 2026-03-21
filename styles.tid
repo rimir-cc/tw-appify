@@ -130,7 +130,12 @@ type: text/vnd.tiddlywiki
     display: flex;
     flex-direction: column;
     border: 2px dashed <<colour primary>>;
+    padding: 0;
     overflow: hidden;
+}
+
+.appify-slot-edit > .appify-slot-label {
+    margin: 0;
 }
 
 .appify-slot-label-tiddler {
@@ -562,6 +567,12 @@ type: text/vnd.tiddlywiki
 .appify-split-pane-edit {
     display: flex;
     flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+.appify-split-pane-edit > .appify-slot-label {
+    margin: 0;
 }
 
 .appify-split-handle {
@@ -595,7 +606,6 @@ type: text/vnd.tiddlywiki
     padding: 3px 8px;
     font-size: 12px;
     font-weight: bold;
-    margin: -12px -12px 0 -12px;
     flex-shrink: 0;
 }
 
@@ -723,6 +733,85 @@ type: text/vnd.tiddlywiki
 /* When tab bar is hidden, content gets padding back */
 .appify-tab-bar:has(> :only-child) + .appify-tab-content {
     padding: 12px;
+}
+
+/* === Condition editor inline === */
+
+.appify-condition-editor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: <<colour code-background>>;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.appify-condition-label {
+    font-weight: bold;
+    color: <<colour primary>>;
+    white-space: nowrap;
+    font-size: 11px;
+}
+
+.appify-condition-input {
+    flex: 1;
+    padding: 2px 6px;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 3px;
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    font-size: 12px;
+    min-width: 0;
+    background: <<colour tiddler-background>>;
+    color: <<colour foreground>>;
+}
+
+/* === View selector dropdown === */
+
+.appify-view-select {
+    padding: 4px 8px;
+    border: 1px solid <<colour tiddler-border>>;
+    border-radius: 4px;
+    font-size: 13px;
+    background: <<colour tiddler-background>>;
+    color: <<colour foreground>>;
+    max-width: 300px;
+}
+
+/* === Stacked view action buttons === */
+
+.appify-stacked-view-actions {
+    display: flex;
+    gap: 4px;
+    padding: 4px 0;
+    margin-bottom: 4px;
+}
+
+.appify-stacked-edit-empty {
+    padding: 16px;
+    color: <<colour muted-foreground>>;
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* === Edit-mode tab bar === */
+
+.appify-tab-bar-edit .appify-tab-btn {
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+.appify-tab-content-edit {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 8px 12px;
+}
+
+.appify-tab-content-edit .appify-editor-textarea {
+    flex: 1;
 }
 
 /* Stacked views: edit mode list */

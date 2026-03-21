@@ -16,10 +16,12 @@ Transform TiddlyWiki into an app platform. Define full-viewport applications wit
 * ''Edit mode modals'' — channel editor (add/rename/delete channels, set defaults), rule editor (add/delete reactive rules), debug inspector (live state, layout switcher)
 * ''In-app tiddler editor'' — edit view tiddlers with the full TW EditTemplate (toolbar, tags, fields, type) in a draft-based overlay, with save/cancel
 * ''Layout switching'' — switch layouts from the debug inspector; configs (view bindings, splits, proportions) are saved per layout and restored when switching back
+* ''Conditional panes'' — split panes can have filter-based conditions; hidden panes collapse and siblings expand to fill the space
+* ''Stacked views (tab groups)'' — a pane can hold multiple views with a tab bar; each view can have its own condition filter
 * ''Draggable grid borders'' — resize grid tracks and split panes by dragging; handles respect grid-area spans
-* ''Clone & delete'' — clone blueprint apps into your own namespace; delete apps with full cleanup
+* ''Clone & delete'' — clone blueprint apps into your own namespace; clone individual views into your namespace; delete apps with full cleanup
 * ''LLM integration'' — in-app chat panel (requires llm-connect) with progressive disclosure documentation and scoped allow-list access
-* ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`
+* ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`; tag view tiddlers with `$:/tags/rimir/appify/view` for discovery
 
 !! Quick start
 
@@ -43,13 +45,17 @@ The tiddler's text body contains `<$statewrap-rule>` definitions for reactive ru
 
 !! Edit mode (Ctrl+M)
 
-In edit mode, the debug bar shows live channel values and five buttons:
+In edit mode, all conditional panes are shown (maximal layout) regardless of their condition filters. The debug bar shows live channel values and five buttons:
 
 * ''⚙ Channel editor'' — add, rename, delete channels and set default values
 * ''⇄ Rule editor'' — view and edit reactive rules (when channel X changes → set channel Y)
 * ''🔍 Debug inspector'' — app info, live state tiddler paths, layout switcher
 * ''⧉ Clone'' — create a copy of the app and its views in a configurable namespace
 * ''✕ Delete'' — permanently remove the app and all associated tiddlers
+
+Each slot shows a label bar with: ''✎'' edit (opens modal editor), ''⧉'' clone (copies view to your namespace), ''↔'' / ''↕'' split buttons, and ''✕'' delete (for sub-slots). Below the label bar: a view selector dropdown (lists all tiddlers tagged `$:/tags/rimir/appify/view`), an inline condition editor (for sub-slots), and a wikitext textarea.
+
+Stacked views show as functional tabs — click a tab to see its editor. The label bar pencil opens the modal for the currently active tab.
 
 !! Built-in layouts
 

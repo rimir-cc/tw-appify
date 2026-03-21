@@ -3,7 +3,7 @@ title: $:/plugins/rimir/appify/modules/widgets/action-appify-split.js
 type: application/javascript
 module-type: widget
 
-Action widget for split/delete/set-view/set-condition/clear-condition/set-views operations on appify layout slots.
+Action widget for split/delete/set-view/set-condition/clear-condition/set-views/set-view-condition/clear-view-condition operations on appify layout slots.
 
 Usage:
   <$action-appify-split app="AppTitle" slot="main" operation="split-h"/>
@@ -12,8 +12,10 @@ Usage:
   <$action-appify-split app="AppTitle" slot="main.1" operation="set-condition" value="[statewrap-get[project]!is[blank]]"/>
   <$action-appify-split app="AppTitle" slot="main.1" operation="clear-condition"/>
   <$action-appify-split app="AppTitle" slot="main.0" operation="set-views" value='[{"view":"A","label":"Tab A"},{"view":"B","label":"Tab B","condition":"[filter]"}]'/>
+  <$action-appify-split app="AppTitle" slot="main.0" operation="set-view-condition" index="1" value="[filter]"/>
+  <$action-appify-split app="AppTitle" slot="main.0" operation="clear-view-condition" index="1"/>
 
-Operations: split-h, split-v, delete, set-view, set-condition, clear-condition, set-views
+Operations: split-h, split-v, delete, set-view, set-condition, clear-condition, set-views, set-view-condition, clear-view-condition
 
 \*/
 (function(){
@@ -38,6 +40,7 @@ ActionAppifySplit.prototype.execute = function() {
 	this.actionSlot = this.getAttribute("slot", "");
 	this.actionOp = this.getAttribute("operation", "");
 	this.actionValue = this.getAttribute("value", "");
+	this.actionIndex = parseInt(this.getAttribute("index", "-1"), 10);
 };
 
 ActionAppifySplit.prototype.refresh = function() {
@@ -93,6 +96,15 @@ ActionAppifySplit.prototype.invokeAction = function() {
 			break;
 		case "set-views":
 			performSetViews(config, rootSlot, pathIndices, value);
+			break;
+		case "set-stack-view":
+			performSetStackView(config, rootSlot, pathIndices, value, this.actionIndex);
+			break;
+		case "set-view-condition":
+			performSetViewCondition(config, rootSlot, pathIndices, value, this.actionIndex);
+			break;
+		case "clear-view-condition":
+			performClearViewCondition(config, rootSlot, pathIndices, this.actionIndex);
 			break;
 		default:
 			return true;
@@ -244,6 +256,31 @@ function performSetViews(config, rootSlot, pathIndices, value) {
 	var nav = navigateToNode(config, rootSlot, pathIndices);
 	if(!nav || !nav.parent) return;
 	nav.parent.children[nav.index] = { views: views };
+}
+
+// Get the leaf node at the given address (unwraps navigateToNode result).
+function getLeafNode(config, rootSlot, pathIndices) {
+	if(pathIndices.length === 0) return config[rootSlot] || null;
+	var nav = navigateToNode(config, rootSlot, pathIndices);
+	return nav ? nav.node : null;
+}
+
+function performSetStackView(config, rootSlot, pathIndices, value, viewIndex) {
+	var node = getLeafNode(config, rootSlot, pathIndices);
+	if(!node || !node.views || viewIndex < 0 || viewIndex >= node.views.length) return;
+	node.views[viewIndex].view = value;
+}
+
+function performSetViewCondition(config, rootSlot, pathIndices, value, viewIndex) {
+	var node = getLeafNode(config, rootSlot, pathIndices);
+	if(!node || !node.views || viewIndex < 0 || viewIndex >= node.views.length) return;
+	node.views[viewIndex].condition = value;
+}
+
+function performClearViewCondition(config, rootSlot, pathIndices, viewIndex) {
+	var node = getLeafNode(config, rootSlot, pathIndices);
+	if(!node || !node.views || viewIndex < 0 || viewIndex >= node.views.length) return;
+	delete node.views[viewIndex].condition;
 }
 
 exports["action-appify-split"] = ActionAppifySplit;

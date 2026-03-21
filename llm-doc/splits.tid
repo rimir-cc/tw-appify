@@ -110,9 +110,30 @@ For nested splits: `main.0.1` = main slot → first child → second sub-child.
 <$action-appify-split app="AppTitle" slot="main.1" operation="set-condition" value="[statewrap-get[project]!is[blank]]"/>
 <$action-appify-split app="AppTitle" slot="main.1" operation="clear-condition"/>
 <$action-appify-split app="AppTitle" slot="main.0" operation="set-views" value='[{"view":"A","label":"Tab A"},{"view":"B","condition":"[filter]"}]'/>
+<$action-appify-split app="AppTitle" slot="main.0" operation="set-stack-view" index="1" value="NewViewTitle"/>
+<$action-appify-split app="AppTitle" slot="main.0" operation="set-view-condition" index="0" value="[filter]"/>
+<$action-appify-split app="AppTitle" slot="main.0" operation="clear-view-condition" index="0"/>
 ```
 
-Available operations: `split-h`, `split-v`, `delete`, `set-view`, `set-condition`, `clear-condition`, `set-views`
+Available operations: `split-h`, `split-v`, `delete`, `set-view`, `set-condition`, `clear-condition`, `set-views`, `set-stack-view`, `set-view-condition`, `clear-view-condition`
+
+Per-view operations (`set-stack-view`, `set-view-condition`, `clear-view-condition`) require the `index` attribute to target a specific view in the `views` array.
+
+## Cloning a view
+
+```
+<$action-appify-clone-view app="AppTitle" slot="main.0" tiddler="SourceView" index="1"/>
+```
+
+Clones a view tiddler to `<clone-prefix>/views/<baseName>`, adds the `$:/tags/rimir/appify/view` tag, and updates the split config reference. The `index` attribute targets a specific view in a stacked views array.
+
+## Edit mode behavior
+
+In edit mode (Ctrl+M), all conditional panes are shown regardless of their condition filters (maximal layout). Conditions are displayed and editable inline. Stacked views render as functional tabs with per-view editors, condition inputs, and view selector dropdowns.
+
+## View identification
+
+View tiddlers are tagged with `$:/tags/rimir/appify/view`. The edit mode view selector dropdown lists all tiddlers (including shadows) with this tag.
 
 ## Creating a split
 

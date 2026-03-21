@@ -1,0 +1,16 @@
+title: $:/plugins/rimir/appify/ui/edit-view-selector
+type: text/vnd.tiddlywiki
+
+\parameters(app, slot, temp, operation:"set-view", index:"-1")
+<div class="appify-view-input-container">
+<$select tiddler=<<temp>> field="text" class="appify-view-select">
+<option value="">-- Select a view --</option>
+<$list filter="[all[tiddlers+shadows]tag[$:/tags/rimir/appify/view]sort[title]]">
+<option value=<<currentTiddler>>><$view field="caption"><$view field="title"/></$view></option>
+</$list>
+</$select>
+<$edit-text tiddler=<<temp>> field="text" tag="input" placeholder="Or type title..." class="appify-view-input"/>
+<$button class="appify-split-btn appify-split-btn-apply">
+<$action-appify-split app=<<app>> slot=<<slot>> operation=<<operation>> index=<<index>> value={{{ [<temp>get[text]] }}}/>
+Apply</$button>
+</div>
