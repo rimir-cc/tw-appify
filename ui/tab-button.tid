@@ -1,12 +1,12 @@
 title: $:/plugins/rimir/appify/ui/tab-button
 type: text/vnd.tiddlywiki
 
-\parameters(stateTiddler, value, default, label)
-<$button class="appify-tab-btn" set=<<stateTiddler>> setTo=<<value>>>
-<$reveal stateTitle=<<stateTiddler>> type="match" text=<<value>> default=<<default>>>
+\parameters(setTiddler, value, activeValue, label)
+<$button class="appify-tab-btn" set=<<setTiddler>> setTo=<<value>>>
+<$list filter="[<activeValue>match<value>]" variable="__x__">
 <span class="appify-tab-active"><<label>></span>
-</$reveal>
-<$reveal stateTitle=<<stateTiddler>> type="nomatch" text=<<value>> default=<<default>>>
+</$list>
+<$list filter="[<activeValue>!match<value>]" variable="__x__">
 <<label>>
-</$reveal>
+</$list>
 </$button>

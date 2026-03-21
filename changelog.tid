@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.2.5 |2026-03-21 |Fix stacked view tab switching with effective-tab fallback; fix block-level wikitext parsing in transcluded views ($mode=block); remove debug output; refactor esc() to module level |
 |v0.2.4 |2026-03-21 |Conditional split pane visibility (condition filters on nodes); stacked views / tab groups; enhanced edit mode (maximal layout, tabbed stacked editor, inline condition editing, view dropdown with tag-based lookup, per-view clone button, per-view edit overlay); view selector and condition editor extracted to wikitext templates |
 |v0.2.3 |2026-03-19 |LLM integration (chat panel, context_guide tool, progressive disclosure docs); clone/delete app actions; live refresh for proportions and splits changes |
 |v0.2.2 |2026-03-18 |Extract edit overlay to wikitext tiddler; hide title editor and TW controls in edit overlay |

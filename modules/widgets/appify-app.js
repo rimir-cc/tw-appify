@@ -429,7 +429,7 @@ AppifyAppWidget.prototype.derivePaneCondition = function(node) {
 
 // Helper: build condition editor via transcluded template (ui/edit-condition.tid).
 // Pre-populates temp tiddler with current condition to stay in sync with config.
-AppifyAppWidget.prototype.buildConditionEditor = function(esc, appTitle, address, currentCondition, operation, indexAttr) {
+AppifyAppWidget.prototype.buildConditionEditor = function(appTitle, address, currentCondition, operation, indexAttr) {
 	var condTemp = "$:/temp/rimir/appify/condition-input/" + address + (indexAttr !== undefined ? "." + indexAttr : "");
 	if(currentCondition) {
 		this.wiki.setText(condTemp, "text", null, currentCondition);
@@ -444,7 +444,7 @@ AppifyAppWidget.prototype.buildConditionEditor = function(esc, appTitle, address
 // Helper: build view selector via transcluded template (ui/edit-view-selector.tid).
 // Pre-populates temp tiddler with current view to show it preselected in the dropdown.
 // For stacked views, pass operation="set-stack-view" and index to target a specific view entry.
-AppifyAppWidget.prototype.buildViewSelector = function(esc, appTitle, address, tempTiddler, currentView, operation, index) {
+AppifyAppWidget.prototype.buildViewSelector = function(appTitle, address, tempTiddler, currentView, operation, index) {
 	if(currentView) {
 		this.wiki.setText(tempTiddler, "text", null, currentView);
 	}
@@ -498,12 +498,12 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 
 		// Condition editor (for pane-level conditions)
 		if(isSubSlot) {
-			wt += this.buildConditionEditor(esc, appTitle, address, condition, "set-condition");
+			wt += this.buildConditionEditor(appTitle, address, condition, "set-condition");
 		}
 
 		// View selector (always shown, with current view preselected)
 		var tempTiddler = "$:/temp/rimir/appify/view-input/" + address;
-		wt += this.buildViewSelector(esc, appTitle, address, tempTiddler, viewTiddler || "");
+		wt += this.buildViewSelector(appTitle, address, tempTiddler, viewTiddler || "");
 
 		// Editor textarea (only when view is assigned)
 		if(viewTiddler) {
@@ -519,7 +519,10 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 		if(viewTiddler) {
 			content.push({
 				type: "transclude",
-				attributes: { "$tiddler": { type: "string", value: viewTiddler } }
+				attributes: {
+					"$tiddler": { type: "string", value: viewTiddler },
+					"$mode": { type: "string", value: "block" }
+				}
 			});
 		}
 	}
@@ -561,22 +564,24 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		wt += '</span></div></$set>';
 
 		// Tab bar (all views, no condition filtering in edit mode)
-		wt += '<div class="appify-tab-bar appify-tab-bar-edit">';
+		wt += '<$set name="__editTab__" filter="[[' + esc(tabStateTiddler) + ']get[text]else[' + esc(defaultView) + ']]" select="0">' +
+			'<div class="appify-tab-bar appify-tab-bar-edit">';
 		for(var t = 0; t < views.length; t++) {
 			var tv = views[t];
 			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
 			if(tv.condition) tLabel += ' \u26A1';
-			wt += '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" stateTiddler="' + esc(tabStateTiddler) +
-				'" value="' + esc(tv.view || ("__tab_" + t)) + '" default="' + esc(defaultView) + '" label="' + esc(tLabel) + '"/>';
+			wt += '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" setTiddler="' + esc(tabStateTiddler) +
+				'" value="' + esc(tv.view || ("__tab_" + t)) + '" activeValue=<<__editTab__>> label="' + esc(tLabel) + '"/>';
 		}
-		wt += '</div>';
+		wt += '</div></$set>';
 
 		// Tab content panels with editors (newlines for block-level parsing)
-		wt += '\n<div class="appify-tab-content appify-tab-content-edit">\n';
+		wt += '\n<$set name="__editTab__" filter="[[' + esc(tabStateTiddler) + ']get[text]else[' + esc(defaultView) + ']]" select="0">' +
+			'\n<div class="appify-tab-content appify-tab-content-edit">\n';
 		for(var p = 0; p < views.length; p++) {
 			var pv = views[p];
 			var pvId = pv.view || ("__tab_" + p);
-			wt += '<$reveal stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pvId) + '" default="' + esc(defaultView) + '">\n';
+			wt += '<$list filter="[<__editTab__>match[' + esc(pvId) + ']]" variable="__x__">\n';
 
 			// Action buttons: edit + clone
 			if(pv.view) {
@@ -592,35 +597,68 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 
 			// View selector (with current view preselected)
 			var stackTemp = "$:/temp/rimir/appify/view-input/" + address + "." + p;
-			wt += this.buildViewSelector(esc, appTitle, address, stackTemp, pv.view || "", "set-stack-view", p) + '\n';
+			wt += this.buildViewSelector(appTitle, address, stackTemp, pv.view || "", "set-stack-view", p) + '\n';
 
 			// Condition editor for this view
-			wt += this.buildConditionEditor(esc, appTitle, address, pv.condition || "", "set-view-condition", p) + '\n';
+			wt += this.buildConditionEditor(appTitle, address, pv.condition || "", "set-view-condition", p) + '\n';
 
 			// Editor textarea
 			if(pv.view) {
 				wt += '<$edit-text tiddler="' + esc(pv.view) + '" field="text" tag="textarea" class="appify-editor-textarea" default=""/>\n';
 			}
 
-			wt += '</$reveal>\n';
+			wt += '</$list>\n';
 		}
-		wt += '</div>';
+		wt += '</div></$set>';
 	} else {
-		// View mode: tab bar + content panels.
-		// $list wraps conditional views, $reveal switches active tab.
-		// Tab bar auto-hides via CSS :only-child when a single tab is visible.
+		// View mode: compute effective tab that falls back to first visible view
+		// when the stored tab's condition becomes false.
 		for(var d = 0; d < views.length; d++) {
 			if(!views[d].condition) { defaultView = views[d].view || ""; break; }
 		}
 
-		// All $reveal widgets get default=defaultView so the first view shows
-		// when the state tiddler doesn't exist yet.
+		// Each conditional view gets its own $set to evaluate independently.
+		// The + prefix in TW filter runs operates on ALL accumulated output,
+		// so conditions can't share a single filter expression.
+		var setCloseCount = 0;
+		for(var v = 0; v < views.length; v++) {
+			var vTitle = views[v].view || "";
+			var vn = "__vis_" + v + "__";
+			if(views[v].condition) {
+				wt += '<$set name="' + vn + '" filter="' + esc(views[v].condition) + '+[limit[1]then[' + esc(vTitle) + ']]" emptyValue="">';
+			} else {
+				wt += '<$set name="' + vn + '" value="' + esc(vTitle) + '">';
+			}
+			setCloseCount++;
+		}
+
+		// Compute effective tab from individual visibility variables (avoids enlist/join)
+		// Step 1: read stored tab
+		wt += '<$set name="__rawTab__" filter="[[' + esc(tabStateTiddler) + ']get[text]else[' + esc(defaultView) + ']]" select="0">';
+
+		// Step 2: check if stored tab matches any visible view
+		var matchFilter = "";
+		for(var vm = 0; vm < views.length; vm++) {
+			matchFilter += "[<__vis_" + vm + "__>match<__rawTab__>] ";
+		}
+		matchFilter += "+[first[]]";
+		wt += '<$set name="__matchResult__" filter="' + esc(matchFilter.trim()) + '" select="0" emptyValue="">';
+
+		// Step 3: use match if found, else first visible view (~ = else-if-empty prefix)
+		var fallbackFilter = "[<__matchResult__>!is[blank]]";
+		for(var vf = 0; vf < views.length; vf++) {
+			fallbackFilter += " ~[<__vis_" + vf + "__>!is[blank]]";
+		}
+		wt += '<$set name="__effectiveTab__" filter="' + esc(fallbackFilter.trim()) + '" select="0">';
+
+		// Tab bar — buttons write to state tiddler, visual active state from __effectiveTab__
+		// Auto-hides via CSS :only-child when a single tab is visible.
 		wt += '<div class="appify-tab-bar">';
 		for(var t2 = 0; t2 < views.length; t2++) {
 			var tv2 = views[t2];
 			var tLabel2 = tv2.label || (tv2.view ? tv2.view.split("/").pop() : "Tab " + t2);
-			var tabBtn = '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" stateTiddler="' + esc(tabStateTiddler) +
-				'" value="' + esc(tv2.view || "") + '" default="' + esc(defaultView) + '" label="' + esc(tLabel2) + '"/>';
+			var tabBtn = '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" setTiddler="' + esc(tabStateTiddler) +
+				'" value="' + esc(tv2.view || "") + '" activeValue=<<__effectiveTab__>> label="' + esc(tLabel2) + '"/>';
 			if(tv2.condition) {
 				wt += '<$list filter="' + esc(tv2.condition) + '">' + tabBtn + '</$list>';
 			} else {
@@ -629,21 +667,16 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		}
 		wt += '</div>';
 
-		// Build content panels — tag="div" on $reveal forces block context,
-		// $mode="block" on $transclude forces block-level parsing of view content
-		wt += '\n<div class="appify-tab-content">\n';
-		for(var p2 = 0; p2 < views.length; p2++) {
-			var pv2 = views[p2];
-			var panel = '<$reveal tag="div" stateTitle="' + esc(tabStateTiddler) + '" type="match" text="' + esc(pv2.view || "") + '" default="' + esc(defaultView) + '">\n' +
-				(pv2.view ? '<$transclude $tiddler="' + esc(pv2.view) + '" $mode="block"/>\n' : '') +
-				'</$reveal>\n';
-			if(pv2.condition) {
-				wt += '<$list filter="' + esc(pv2.condition) + '">\n' + panel + '</$list>\n';
-			} else {
-				wt += panel;
-			}
+		// Content panel — single $transclude driven by the computed effective tab
+		wt += '\n<div class="appify-tab-content">\n' +
+			'<$transclude $tiddler=<<__effectiveTab__>> $mode="block"/>\n' +
+			'</div>';
+
+		// Close $set wrappers: 3 (rawTab + matchResult + effectiveTab) + N (per-view visibility)
+		wt += '</$set></$set></$set>';
+		for(var vc = 0; vc < setCloseCount; vc++) {
+			wt += '</$set>';
 		}
-		wt += '</div>';
 	}
 
 	var parsed = this.wiki.parseText("text/vnd.tiddlywiki", wt, { parseAsInline: false });

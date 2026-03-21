@@ -92,7 +92,7 @@ Each view entry has:
 
 Tab selection state is stored in: `$:/state/rimir/appify/tab/<appTitle>/<address>`
 
-Default active tab: first visible view.
+Default active tab: first visible view. When the active tab's condition becomes false (e.g., channel changes), the system automatically falls back to the first visible view. The effective tab is computed reactively from individual per-view visibility variables — no manual reset needed.
 
 ### Pane-level condition derivation
 
