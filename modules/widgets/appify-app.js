@@ -569,7 +569,6 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		for(var t = 0; t < views.length; t++) {
 			var tv = views[t];
 			var tLabel = tv.label || (tv.view ? tv.view.split("/").pop() : "Tab " + t);
-			if(tv.condition) tLabel += ' \u26A1';
 			wt += '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" setTiddler="' + esc(tabStateTiddler) +
 				'" value="' + esc(tv.view || ("__tab_" + t)) + '" activeValue=<<__editTab__>> label="' + esc(tLabel) + '"/>';
 		}

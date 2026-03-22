@@ -787,13 +787,6 @@ type: text/vnd.tiddlywiki
     margin-bottom: 4px;
 }
 
-.appify-stacked-edit-empty {
-    padding: 16px;
-    color: <<colour muted-foreground>>;
-    font-style: italic;
-    font-size: 13px;
-}
-
 /* === Edit-mode tab bar === */
 
 .appify-tab-bar-edit .appify-tab-btn {
