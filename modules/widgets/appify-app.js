@@ -683,6 +683,11 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 };
 
 AppifyAppWidget.prototype.refresh = function(changedTiddlers) {
+	var changedAttributes = this.computeAttributes();
+	if(changedAttributes.tiddler) {
+		this.refreshSelf();
+		return true;
+	}
 	if(this.appTitle && changedTiddlers[this.appTitle]) {
 		this.refreshSelf();
 		return true;
