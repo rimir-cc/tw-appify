@@ -20,7 +20,7 @@ Transform TiddlyWiki into an app platform. Define full-viewport applications wit
 * ''Stacked views (tab groups)'' — a pane can hold multiple views with a tab bar; each view can have its own condition filter
 * ''Draggable grid borders'' — resize grid tracks and split panes by dragging; handles respect grid-area spans
 * ''Clone & delete'' — clone blueprint apps into your own namespace; clone individual views into your namespace; delete apps with full cleanup
-* ''LLM integration'' — in-app chat panel (requires llm-connect) with context-scoped help pages (via llm-help) and scoped allow-list access
+* ''LLM integration'' — in-app chat panel (requires llm-connect) with context-scoped help pages (via llm-help) and deny-list protection (tiddlers tagged `sensitive` are hidden from LLM)
 * ''Extensible'' — register apps by tagging tiddlers with `$:/tags/rimir/appify/app`; tag view tiddlers with `$:/tags/rimir/appify/view` for discovery
 
 !! Quick start

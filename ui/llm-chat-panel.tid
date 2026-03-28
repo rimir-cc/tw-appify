@@ -20,8 +20,8 @@ type: text/vnd.tiddlywiki
   systemPrompt=<<appifyPrompt>>
   tools="[all[shadows+tiddlers]tag[$:/tags/rimir/llm-connect/tool]]"
   placeholder="Ask about this app..."
-  protectionMode="allow"
-  allowFilter="[prefix[$:/state/rimir/statewrap/]] [prefix[$:/config/rimir/appify/]]"
+  protectionMode="deny"
+  denyFilter="[tag[sensitive]]"
 />
 </$wikify>
 </div>
