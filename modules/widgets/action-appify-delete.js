@@ -102,6 +102,11 @@ ActionAppifyDelete.prototype.invokeAction = function() {
 	if(activeApp === appTitle) {
 		this.wiki.setText(ACTIVE_APP, "text", null, "");
 		this.wiki.setText(EDIT_MODE, "text", null, "no");
+		// Remove appify from llm-help active context
+		var ctxTiddler = "$:/temp/rimir/llm-help/active-context";
+		var ctx = this.wiki.getTiddlerText(ctxTiddler, "");
+		var keys = ctx.split(/\s+/).filter(function(k) { return k && k !== "appify"; });
+		this.wiki.setText(ctxTiddler, "text", null, keys.join(" "));
 	}
 
 	// Delete the app tiddler
