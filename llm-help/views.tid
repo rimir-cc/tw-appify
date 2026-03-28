@@ -1,26 +1,30 @@
-title: $:/rimir/llm-doc/appify/views
-tags: $:/tags/rimir/appify/llm-doc
-description: View tiddlers — how they render in slots, common wikitext patterns (statewrap, buttons, lists, reveals), modifying content
-llm-sort: 03
+created: 20260328120000000
+modified: 20260328120000000
+title: $:/plugins/rimir/appify/llm-help/views
+tags: $:/tags/rimir/llm-help/page
+llm-help-path: appify/views
+llm-help-description: View tiddlers — how they render in slots, common wikitext patterns, modifying content
+llm-help-context: appify
+llm-help-sort: 03
 type: text/vnd.tiddlywiki
 
-# View Tiddlers
+View Tiddlers
 
 View tiddlers are wikitext tiddlers that render inside layout slots. They should be tagged with `$:/tags/rimir/appify/view` so the edit-mode view selector can discover them. Views are assigned via `appify-view-<slot>` fields on the app tiddler or via the `views` array in the splits config JSON.
 
-## Binding a view to a slot
+Binding a view to a slot:
 
 ```
 set_field(title="<appTitle>", field="appify-view-sidebar", value="MyApp/sidebar-view")
 ```
 
-## Reading a view's source
+Reading a view's source:
 
 Use `get_tiddler(title)` to read the full wikitext. This is what you modify with `set_field(field="text")`.
 
-## Common wikitext patterns in views
+Common wikitext patterns in views:
 
-### Navigation list (clickable items that set a channel)
+Navigation list (clickable items that set a channel):
 ```
 <$list filter="Alpha Bravo Charlie">
 <$button>
@@ -30,7 +34,7 @@ Use `get_tiddler(title)` to read the full wikitext. This is what you modify with
 </$list>
 ```
 
-### Conditional rendering (show content based on channel)
+Conditional rendering (show content based on channel):
 ```
 <%if [statewrap-get[project]!is[blank]]%>
   Project is selected: <$text text={{{[statewrap-get[project]]}}}/>
@@ -39,7 +43,7 @@ Use `get_tiddler(title)` to read the full wikitext. This is what you modify with
 <%endif%>
 ```
 
-### Tab buttons (mutually exclusive selection)
+Tab buttons (mutually exclusive selection):
 ```
 <$button class={{{ [statewrap-get[tab]match[overview]then[active]else[]] }}}>
 <$action-statewrap-set channel="tab" value="overview"/>
@@ -47,14 +51,14 @@ Overview
 </$button>
 ```
 
-### Reveal panel (show/hide based on channel value)
+Reveal panel (show/hide based on channel value):
 ```
 <$reveal stateTitle={{{[statewrap-ref[tab]]}}} type="match" text="overview">
   Content for overview tab
 </$reveal>
 ```
 
-### Dynamic macro-based data
+Dynamic macro-based data:
 ```
 \define items-Alpha() Design Build Test
 \define items-Bravo() Research Plan Execute
@@ -67,7 +71,7 @@ Overview
 ```
 This pattern stores data in macros keyed by channel value.
 
-## Modifying a view
+Modifying a view:
 
 1. Read current wikitext with get_tiddler
 2. Understand the structure (macros, lists, reveals, channels used)
@@ -75,21 +79,18 @@ This pattern stores data in macros keyed by channel value.
 
 Important: Preserve the existing patterns. If a view uses `\define` macros for data, add new entries in the same pattern. If it uses `$list filter="..."`, add items to that filter.
 
-## Creating a new view
+Creating a new view:
 
 1. Create a tiddler with `type: text/vnd.tiddlywiki` and tag `$:/tags/rimir/appify/view`
 2. Write wikitext using statewrap channels for reactivity
 3. Assign it to a slot via the edit-mode view selector dropdown, or by writing the splits config JSON
 
-## Cloning a view
+Cloning a view:
 
 Use `<$action-appify-clone-view>` to clone an existing view into the user's namespace:
 ```
 <$action-appify-clone-view app="AppTitle" slot="main.0" tiddler="SourceView"/>
 ```
-This creates a copy at `<clone-prefix>/views/<baseName>`, adds the view tag, and updates the split config reference. Available as a button (⧉) in edit mode.
+This creates a copy at `<clone-prefix>/views/<baseName>`, adds the view tag, and updates the split config reference. Available as a button in edit mode.
 
-## Deeper docs
-
-- `$:/rimir/llm-doc/appify/channels` — how channels work
-- `$:/rimir/llm-doc/appify/splits` — splitting a slot into sub-panes
+See also: llm_help("appify/channels") — how channels work, llm_help("appify/splits") — splitting a slot into sub-panes

@@ -1,14 +1,18 @@
-title: $:/rimir/llm-doc/appify/channels
-tags: $:/tags/rimir/appify/llm-doc
-description: How channels work — state tiddler paths, setting/reading values, adding new channels, defaults
-llm-sort: 02
+created: 20260328120000000
+modified: 20260328120000000
+title: $:/plugins/rimir/appify/llm-help/channels
+tags: $:/tags/rimir/llm-help/page
+llm-help-path: appify/channels
+llm-help-description: How channels work — state tiddler paths, setting/reading values, adding new channels, defaults
+llm-help-context: appify
+llm-help-sort: 02
 type: text/vnd.tiddlywiki
 
-# Channels
+Channels
 
 Channels are named state variables that drive app behavior. Each channel is a tiddler in the wiki store.
 
-## State tiddler path
+State tiddler path:
 
 ```
 $:/state/rimir/statewrap/<appTitle>/<channelName>
@@ -16,7 +20,7 @@ $:/state/rimir/statewrap/<appTitle>/<channelName>
 
 The `text` field holds the current value. Empty text = channel is unset.
 
-## Reading channels in wikitext
+Reading channels in wikitext:
 
 Inside view tiddlers (which are wrapped by `<$statewrap>`), use these filter operators:
 
@@ -25,7 +29,7 @@ Inside view tiddlers (which are wrapped by `<$statewrap>`), use these filter ope
 
 Example: `<%if [statewrap-get[project]!is[blank]]%>...<%endif%>`
 
-## Setting a channel value
+Setting a channel value:
 
 From outside (tool call):
 ```
@@ -39,7 +43,7 @@ From wikitext (inside a button or action):
 
 To clear: set value to empty string `""`.
 
-## Adding a new channel
+Adding a new channel:
 
 1. Read the app tiddler's `appify-channels` field
 2. Append the new channel name (space-separated)
@@ -52,12 +56,10 @@ set_field(title="<appTitle>", field="appify-channels", value="project task tab t
 set_field(title="<appTitle>", field="appify-default-theme", value="light")
 ```
 
-## Removing a channel
+Removing a channel:
 
 1. Remove the name from `appify-channels`
 2. Delete the `appify-default-<channel>` field if it exists (set to empty)
 3. Consider removing rules that reference it
 
-## Deeper docs
-
-- `$:/rimir/llm-doc/appify/rules` — reactive rules that fire when channels change
+See also: llm_help("appify/rules") — reactive rules that fire when channels change

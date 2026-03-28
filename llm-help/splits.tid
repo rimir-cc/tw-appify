@@ -1,14 +1,18 @@
-title: $:/rimir/llm-doc/appify/splits
-tags: $:/tags/rimir/appify/llm-doc
-description: Splitting a layout slot into sub-panes — horizontal/vertical splits, nested splits, assigning views, conditional visibility, stacked views (tab groups)
-llm-sort: 05
+created: 20260328120000000
+modified: 20260328120000000
+title: $:/plugins/rimir/appify/llm-help/splits
+tags: $:/tags/rimir/llm-help/page
+llm-help-path: appify/splits
+llm-help-description: Splitting a layout slot into sub-panes — horizontal/vertical splits, nested splits, conditional visibility, stacked views
+llm-help-context: appify
+llm-help-sort: 05
 type: text/vnd.tiddlywiki
 
-# Splits
+Splits
 
 A slot can be split into sub-panes, each with its own view tiddler. Splits are stored as JSON.
 
-## Storage
+Storage:
 
 Splits config tiddler: `$:/config/rimir/appify/splits/<appTitle>`
 
@@ -22,7 +26,7 @@ Leaf nodes have:
 - `views`: array of view entries (stacked views / tab group) — mutually exclusive with `view`
 - `condition`: optional TW filter expression — when empty result, the pane is hidden
 
-## Example: sidebar split vertically
+Example — sidebar split vertically:
 
 ```json
 {
@@ -37,9 +41,9 @@ Leaf nodes have:
 }
 ```
 
-## Conditional visibility
+Conditional visibility:
 
-Any leaf or split child node can have a `condition` filter. When the filter returns empty, the pane (and its resize handle) are hidden. The sibling pane expands to fill the space via flexbox.
+Any leaf or split child node can have a `condition` filter. When the filter returns empty, the pane (and its resize handle) are hidden. The sibling pane expands to fill the space.
 
 ```json
 {
@@ -54,9 +58,9 @@ Any leaf or split child node can have a `condition` filter. When the filter retu
 }
 ```
 
-Conditions work inside `<$statewrap>`, so `statewrap-get` operators are available. The `$list` widget re-evaluates its filter on refresh — no manual refresh needed.
+Conditions work inside `<$statewrap>`, so `statewrap-get` operators are available.
 
-### Corner cases
+Corner cases:
 
 | Case | Behavior |
 |------|----------|
@@ -65,7 +69,7 @@ Conditions work inside `<$statewrap>`, so `statewrap-get` operators are availabl
 | Inner pane hidden | Inner sibling fills inner space, outer split unchanged |
 | Both children hidden | Container empty |
 
-## Stacked views (tab groups)
+Stacked views (tab groups):
 
 A leaf node can hold multiple views using a `views` array instead of a single `view` field:
 
@@ -84,27 +88,26 @@ Each view entry has:
 - `label`: tab label (defaults to last segment of view title)
 - `condition`: optional filter — when empty, this view is hidden from tabs
 
-### Rendering behavior
-
-- **0 visible views**: pane content is empty (collapses if parent has condition mechanism)
+Rendering behavior:
+- **0 visible views**: pane content is empty
 - **1 visible view**: rendered directly, no tab bar
 - **2+ visible views**: tab bar + content panels with `$reveal` switching
 
-Tab selection state is stored in: `$:/state/rimir/appify/tab/<appTitle>/<address>`
+Tab selection state: `$:/state/rimir/appify/tab/<appTitle>/<address>`
 
-Default active tab: first visible view. When the active tab's condition becomes false (e.g., channel changes), the system automatically falls back to the first visible view. The effective tab is computed reactively from individual per-view visibility variables — no manual reset needed.
+Default active tab: first visible view. When the active tab's condition becomes false, the system automatically falls back to the first visible view.
 
-### Pane-level condition derivation
+Pane-level condition derivation:
 
 When all views in a stacked leaf have conditions, the pane automatically derives a combined condition: it's visible when at least one view's condition is met. If any view has no condition (always visible), the pane is always visible.
 
-## View binding for split panes
+View binding for split panes:
 
 Split panes are addressed with dot-notation: `<slot>.<index>.<index>...`
 
-For nested splits: `main.0.1` = main slot → first child → second sub-child.
+For nested splits: `main.0.1` = main slot -> first child -> second sub-child.
 
-## Operations via action widget
+Operations via action widget:
 
 ```
 <$action-appify-split app="AppTitle" slot="main.1" operation="set-condition" value="[statewrap-get[project]!is[blank]]"/>
@@ -119,7 +122,7 @@ Available operations: `split-h`, `split-v`, `delete`, `set-view`, `set-condition
 
 Per-view operations (`set-stack-view`, `set-view-condition`, `clear-view-condition`) require the `index` attribute to target a specific view in the `views` array.
 
-## Cloning a view
+Cloning a view:
 
 ```
 <$action-appify-clone-view app="AppTitle" slot="main.0" tiddler="SourceView" index="1"/>
@@ -127,21 +130,18 @@ Per-view operations (`set-stack-view`, `set-view-condition`, `clear-view-conditi
 
 Clones a view tiddler to `<clone-prefix>/views/<baseName>`, adds the `$:/tags/rimir/appify/view` tag, and updates the split config reference. The `index` attribute targets a specific view in a stacked views array.
 
-## Edit mode behavior
+Edit mode behavior:
 
 In edit mode (Ctrl+M), all conditional panes are shown regardless of their condition filters (maximal layout). Conditions are displayed and editable inline. Stacked views render as functional tabs with per-view editors, condition inputs, and view selector dropdowns.
 
-## View identification
+View identification:
 
 View tiddlers are tagged with `$:/tags/rimir/appify/view`. The edit mode view selector dropdown lists all tiddlers (including shadows) with this tag.
 
-## Creating a split
+Creating a split:
 
 1. Read current splits: get_tiddler on `$:/config/rimir/appify/splits/<appTitle>`
 2. Add/modify the JSON structure (add `condition` or `views` as needed)
 3. Write it back with set_field(field="text")
 
-## Deeper docs
-
-- `$:/rimir/llm-doc/appify/proportions` — grid-level column/row sizing
-- `$:/rimir/llm-doc/appify/views` — what to put in each pane
+See also: llm_help("appify/proportions") — grid-level column/row sizing, llm_help("appify/views") — what to put in each pane

@@ -1,14 +1,18 @@
-title: $:/rimir/llm-doc/appify/proportions
-tags: $:/tags/rimir/appify/llm-doc
-description: Customizing grid column/row sizes — making sidebar wider, topbar taller, etc.
-llm-sort: 07
+created: 20260328120000000
+modified: 20260328120000000
+title: $:/plugins/rimir/appify/llm-help/proportions
+tags: $:/tags/rimir/llm-help/page
+llm-help-path: appify/proportions
+llm-help-description: Customizing grid column/row sizes — making sidebar wider, topbar taller, etc.
+llm-help-context: appify
+llm-help-sort: 07
 type: text/vnd.tiddlywiki
 
-# Grid Proportions
+Grid Proportions
 
 Grid proportions control the relative sizes of layout columns and rows.
 
-## Storage
+Storage:
 
 Proportions tiddler: `$:/config/rimir/appify/proportions/<appTitle>`
 
@@ -22,7 +26,7 @@ JSON format:
 
 Values are fractions that sum to 1.0 for each axis. The number of entries matches the layout's column/row count.
 
-## Example: make sidebar wider
+Example — make sidebar wider:
 
 For `sidebar-main` layout (2 columns):
 ```json
@@ -31,14 +35,14 @@ For `sidebar-main` layout (2 columns):
 
 This makes the sidebar 35% of the width instead of the default 250px/1fr.
 
-## Example: taller topbar
+Example — taller topbar:
 
 For `topbar-sidebar-main` layout (2 rows):
 ```json
 {"rows": [0.12, 0.88]}
 ```
 
-## Modifying proportions
+Modifying proportions:
 
 1. Read current: get_tiddler on `$:/config/rimir/appify/proportions/<appTitle>`
 2. Modify the JSON
@@ -46,6 +50,4 @@ For `topbar-sidebar-main` layout (2 rows):
 
 If no proportions tiddler exists, the layout uses its default CSS grid values (from the layout tiddler's `appify-grid-columns` and `appify-grid-rows` fields).
 
-## Deeper docs
-
-- `$:/rimir/llm-doc/appify/layouts` — layout structure and slot names
+See also: llm_help("appify/layouts") — layout structure and slot names
