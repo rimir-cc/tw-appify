@@ -3,14 +3,14 @@ modified: 20260318120000000
 title: $:/plugins/rimir/appify/ui/llm-chat-panel
 type: text/vnd.tiddlywiki
 
-\import [[$:/plugins/rimir/llm-connect/ui/tool-selector]]
+\import [[$:/plugins/rimir/llm-connect/ui/chat-toolbar]]
 \whitespace trim
 <$reveal state="$:/state/rimir/appify/llm-chat-open" type="match" text="yes" animate="yes">
 <div class="appify-llm-panel llm-chat-panel">
 <div class="appify-llm-panel-header llm-chat-panel-header">
-<span>App Chat</span>
-<span class="appify-llm-panel-header-actions">
-<<llm-tool-selector {{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix{$:/state/rimir/appify/active-app}] }}}>>
+<<llm-chat-toolbar-left "App Chat">>
+<span class="appify-llm-panel-header-actions llm-chat-panel-header-actions">
+<$transclude $variable="llm-chat-toolbar-actions" chatTiddler={{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix{$:/state/rimir/appify/active-app}] }}}/>
 <$button set="$:/state/rimir/appify/llm-chat-open" setTo="no" class="tc-btn-invisible">&times;</$button>
 </span>
 </div>
