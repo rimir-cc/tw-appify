@@ -4,7 +4,7 @@ title: $:/plugins/rimir/appify/llm-help/layouts
 tags: $:/tags/rimir/llm-help/page
 llm-help-path: appify/layouts
 llm-help-description: Available grid layouts, their slot names, and how to switch between them
-llm-help-context: appify
+llm-help-context: rimir/appify
 llm-help-sort: 04
 type: text/vnd.tiddlywiki
 

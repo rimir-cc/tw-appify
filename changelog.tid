@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.2.10 |2026-03-29 |Rename llm-help context key from `appify` to `rimir/appify` — consistent namespacing across all plugins |
 |v0.2.9 |2026-03-28 |Auto-set `appify` help context — FAB adds/removes `appify` from `$:/temp/rimir/llm-help/active-context` on app activate/deactivate; delete-app also cleans up context |
 |v0.2.8 |2026-03-25 |Switch LLM chat panel protection from whitelist to blacklist (deny mode, base filter: tag[sensitive]); remove condition indicator from stacked edit tabs; remove dead CSS |
 |v0.2.7 |2026-03-28 |Migrate LLM docs from custom llm-doc/context_guide system to llm-help pages (context-scoped, discoverable via llm_help tool). Remove old llm-doc tiddlers and context_guide tool. Update chat panel prompt to use llm_help |

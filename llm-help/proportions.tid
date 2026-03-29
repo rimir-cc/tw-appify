@@ -4,7 +4,7 @@ title: $:/plugins/rimir/appify/llm-help/proportions
 tags: $:/tags/rimir/llm-help/page
 llm-help-path: appify/proportions
 llm-help-description: Customizing grid column/row sizes — making sidebar wider, topbar taller, etc.
-llm-help-context: appify
+llm-help-context: rimir/appify
 llm-help-sort: 07
 type: text/vnd.tiddlywiki
 

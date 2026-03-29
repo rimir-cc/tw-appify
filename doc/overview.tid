@@ -28,7 +28,7 @@ Transforms TiddlyWiki into an app platform. Define full-viewport applications wi
 * In-app tiddler editor: full TW EditTemplate with draft lifecycle in an overlay
 * Layout switching with automatic config persistence (view bindings, splits, proportions)
 * Draggable grid borders with grid-area-aware handle positioning
-* LLM integration: in-app chat panel with context-scoped help pages (auto-activates `appify` help context on app switch)
+* LLM integration: in-app chat panel with context-scoped help pages (auto-activates `rimir/appify` help context on app switch)
 * Extensible: register apps by tagging tiddlers, add custom layout templates
 
 !! Prerequisites

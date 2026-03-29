@@ -4,7 +4,7 @@ title: $:/plugins/rimir/appify/llm-help/rules
 tags: $:/tags/rimir/llm-help/page
 llm-help-path: appify/rules
 llm-help-description: Reactive rules — when a channel changes, automatically set other channels (cascading resets, tab defaults)
-llm-help-context: appify
+llm-help-context: rimir/appify
 llm-help-sort: 06
 type: text/vnd.tiddlywiki
 
