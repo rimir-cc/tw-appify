@@ -855,12 +855,6 @@ type: text/vnd.tiddlywiki
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    resize: both;
-    direction: rtl;
-}
-
-.appify-llm-panel > * {
-    direction: ltr;
 }
 
 .appify-llm-panel .llm-chat-container {

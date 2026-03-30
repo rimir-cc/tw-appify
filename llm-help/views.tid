@@ -4,7 +4,7 @@ title: $:/plugins/rimir/appify/llm-help/views
 tags: $:/tags/rimir/llm-help/page
 llm-help-path: appify/views
 llm-help-description: View tiddlers — how they render in slots, common wikitext patterns, modifying content
-llm-help-context: rimir/appify
+llm-help-context: rimir/appify/views
 llm-help-sort: 03
 type: text/vnd.tiddlywiki
 

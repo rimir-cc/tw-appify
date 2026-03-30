@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.2.14 |2026-03-30 |Add JS-based edge/corner resize to LLM chat panel. Per-topic llm-help context paths |
 |v0.2.13 |2026-03-30 |Per-chat help context — FAB sets `rimir/appify` on the appify chat tiddler's `llm-help-context` field instead of the global tiddler. Remove global context cleanup from delete-app and wiki-mode switch |
 |v0.2.12 |2026-03-30 |Fix dropdown checkboxes in app chat — skip `fabWidget.refresh()` when fab is hidden (app mode), preventing duplicate widget trees with conflicting `$click-outside` handlers |
 |v0.2.11 |2026-03-29 |Use shared chat toolbar from llm-connect — pin, export/import, tool selector, context selector now inherited from `chat-toolbar.tid` instead of duplicated |
