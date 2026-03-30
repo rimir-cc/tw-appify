@@ -10,7 +10,6 @@ type: text/vnd.tiddlywiki
 <$action-setfield $tiddler="$:/state/rimir/appify/active-app" text=""/>
 <$action-setfield $tiddler="$:/state/rimir/appify/edit-mode" text="no"/>
 <$action-setfield $tiddler="$:/state/rimir/appify/fab-open" text=""/>
-<$action-listops $tiddler="$:/temp/rimir/llm-help/active-context" $field="text" $subfilter="-[[rimir/appify]]"/>
 Wiki (default)
 </$button>
 <hr class="appify-fab-divider"/>
@@ -18,7 +17,7 @@ Wiki (default)
 <$button class="appify-fab-item">
 <$action-setfield $tiddler="$:/state/rimir/appify/active-app" text=<<currentTiddler>>/>
 <$action-setfield $tiddler="$:/state/rimir/appify/fab-open" text=""/>
-<$action-listops $tiddler="$:/temp/rimir/llm-help/active-context" $field="text" $subfilter="[[rimir/appify]]"/>
+<$action-setfield $tiddler={{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix<currentTiddler>] }}} llm-help-context="rimir/appify"/>
 <$view field="caption"><$view field="title"/></$view>
 </$button>
 </$list>
