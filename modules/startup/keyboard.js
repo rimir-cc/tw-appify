@@ -59,7 +59,13 @@ exports.startup = function() {
 		if(changes[STATE_TIDDLER]) {
 			updateLayout();
 		}
-		fabWidget.refresh(changes);
+		// Only refresh fab widget when visible (wiki mode).
+		// In app mode, fab is hidden and the same template is transcluded
+		// in app-layout.tid — refreshing both creates duplicate $click-outside
+		// handlers that conflict with each other.
+		if(fabContainer.style.display !== "none") {
+			fabWidget.refresh(changes);
+		}
 	});
 
 	// --- Ctrl+M keyboard shortcut ---
