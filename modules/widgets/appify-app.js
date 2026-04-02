@@ -279,7 +279,17 @@ AppifyAppWidget.prototype.execute = function() {
 		children: bodyTree.concat(preGridNodes).concat([gridNode]).concat(editOverlayNodes)
 	};
 
-	this.makeChildWidgets([statewrapNode]);
+	// Wrap in importvariables so global macros/functions/procedures are
+	// available inside dynamically generated wikitext (stacked views, splits).
+	var importNode = {
+		type: "importvariables",
+		attributes: {
+			"filter": { type: "string", value: "[all[shadows+tiddlers]tag[$:/tags/Global]] [all[shadows+tiddlers]tag[$:/tags/Macro]]" }
+		},
+		children: [statewrapNode]
+	};
+
+	this.makeChildWidgets([importNode]);
 };
 
 // --- Recursive slot builders ---
