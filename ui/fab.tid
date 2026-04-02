@@ -17,7 +17,7 @@ Wiki (default)
 <$button class="appify-fab-item">
 <$action-setfield $tiddler="$:/state/rimir/appify/active-app" text=<<currentTiddler>>/>
 <$action-setfield $tiddler="$:/state/rimir/appify/fab-open" text=""/>
-<$action-setfield $tiddler={{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix<currentTiddler>] }}} llm-help-context="rimir/appify"/>
+<$action-setfield $tiddler={{{ [[$:/temp/rimir/appify/llm-chat/]addsuffix<currentTiddler>] }}} llm-help-context={{{ [all[shadows+tiddlers]tag[$:/tags/rimir/llm-help/page]get[llm-help-context]enlist-input[]] :filter[prefix[rimir/appify]] +[unique[]sort[]join[ ]] }}}/>
 <$view field="caption"><$view field="title"/></$view>
 </$button>
 </$list>
