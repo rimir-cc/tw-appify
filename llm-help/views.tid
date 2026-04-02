@@ -93,4 +93,24 @@ Use `<$action-appify-clone-view>` to clone an existing view into the user's name
 ```
 This creates a copy at `<clone-prefix>/views/<baseName>`, adds the view tag, and updates the split config reference. Available as a button in edit mode.
 
+Gotchas:
+
+`\function` bodies cannot use `statewrap-get` or other tree-dependent filter operators. TW evaluates `\function` bodies via `makeFakeWidgetWithVariables()` — a disconnected object without `parentWidget`. Operators that walk up the widget tree (like `statewrap-get` looking for a `<$statewrap>` ancestor) will silently return empty.
+
+Use `\procedure` + `[subfilter<>]` instead:
+```
+\procedure my-entity-type() [statewrap-get[section]match[projects]then[project]] ~[statewrap-get[section]match[people]then[person]]
+
+<$let entityType={{{ [subfilter<my-entity-type>] }}}>
+```
+
+Do NOT use:
+```
+\function my.entity-type() [statewrap-get[section]match[projects]then[project]] ~...
+
+<$let entityType={{{ [function[my.entity-type]] }}}>
+```
+
+The `[subfilter<>]` operator evaluates the filter with the real widget context, preserving the full parent chain so `statewrap-get` can find the statewrap wrapper.
+
 See also: llm_help("appify/channels") — how channels work, llm_help("appify/splits") — splitting a slot into sub-panes
