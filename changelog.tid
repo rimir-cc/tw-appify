@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|v0.2.17 |2026-04-03 |Include AdvancedPerformance info-bar in app layout (safe no-op if plugin not installed) |
 |v0.2.16 |2026-04-02 |FAB sets all `rimir/appify/*` help contexts dynamically instead of just top-level `rimir/appify` |
 |v0.2.15 |2026-03-30 |Add `defaultContext` attribute to LLM chat panel (`rimir/appify rimir/typed tw-gotchas shortcuts`) |
 |v0.2.14 |2026-03-30 |Add JS-based edge/corner resize to LLM chat panel. Per-topic llm-help context paths |
