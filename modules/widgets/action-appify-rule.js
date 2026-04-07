@@ -161,9 +161,19 @@ function parseRulesFromBody(text, wiki) {
 	if(!parser || !parser.tree) return [];
 
 	var rules = [];
-	for(var i = 0; i < parser.tree.length; i++) {
-		var node = parser.tree[i];
-		// TW parser creates { type: "element", tag: "$statewrap-rule" } for widget tags
+	collectRules(parser.tree, rules);
+	return rules;
+}
+
+/**
+ * Recursively walk the parse tree to find statewrap-rule nodes.
+ * TW's wikitext parser may wrap widgets in <p> elements, so we
+ * need to search children, not just the top level.
+ */
+function collectRules(nodes, rules) {
+	if(!nodes) return;
+	for(var i = 0; i < nodes.length; i++) {
+		var node = nodes[i];
 		if(isWidget(node, "$statewrap-rule")) {
 			var when = "";
 			if(node.attributes && node.attributes.when) {
@@ -185,9 +195,10 @@ function parseRulesFromBody(text, wiki) {
 			if(when) {
 				rules.push({ when: when, actions: actions });
 			}
+		} else if(node.children) {
+			collectRules(node.children, rules);
 		}
 	}
-	return rules;
 }
 
 /**
