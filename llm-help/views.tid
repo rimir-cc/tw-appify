@@ -60,8 +60,8 @@ Reveal panel (show/hide based on channel value):
 
 Dynamic macro-based data:
 ```
-\define items-Alpha() Design Build Test
-\define items-Bravo() Research Plan Execute
+\procedure items-Alpha() Design Build Test
+\procedure items-Bravo() Research Plan Execute
 
 <$set name="proj" value={{{[statewrap-get[project]]}}}>
 <$list filter="[<proj>addprefix[items-]getvariable[]enlist-input[]]" variable="item">
@@ -77,7 +77,7 @@ Modifying a view:
 2. Understand the structure (macros, lists, reveals, channels used)
 3. Write updated wikitext with set_field(field="text", value="new wikitext")
 
-Important: Preserve the existing patterns. If a view uses `\define` macros for data, add new entries in the same pattern. If it uses `$list filter="..."`, add items to that filter.
+Important: Preserve the existing patterns. If a view uses `\procedure` macros for data, add new entries in the same pattern. If it uses `$list filter="..."`, add items to that filter.
 
 Creating a new view:
 

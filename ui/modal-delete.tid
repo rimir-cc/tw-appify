@@ -21,7 +21,7 @@ This will permanently delete the app and all its view tiddlers. This cannot be u
 </$list>
 </div>
 
-<$button class="appify-modal-btn appify-modal-btn-primary" style="background: #c44; border-color: #c44;">
+<$button class="appify-modal-btn appify-modal-btn-primary" style="background: <<colour alert-highlight>>; border-color: <<colour alert-highlight>>;">
 <$action-appify-delete app=<<app>>/>
 <$action-sendmessage $message="tm-close-tiddler"/>
 Delete App

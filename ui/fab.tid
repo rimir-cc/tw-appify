@@ -25,19 +25,12 @@ Wiki (default)
 <$list filter="[[$:/plugins/rimir/llm-connect]has[plugin-type]] [[$:/state/rimir/appify/active-app]get[text]!is[blank]] +[count[]match[2]]">
 <$button class="appify-llm-fab-btn" tooltip="App Chat">
 <$action-setfield $tiddler="$:/state/rimir/appify/llm-chat-open" text={{{[[$:/state/rimir/appify/llm-chat-open]get[text]match[yes]then[no]else[yes]]}}}/>
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-</svg>
+{{$:/plugins/rimir/appify/icon/chat}}
 </$button>
 </$list>
 <$button class="appify-fab-btn">
 <$action-setfield $tiddler="$:/state/rimir/appify/fab-open" text={{{[[$:/state/rimir/appify/fab-open]get[text]match[yes]then[]else[yes]]}}}/>
-<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-<rect x="1" y="1" width="8" height="8" rx="1.5"/>
-<rect x="11" y="1" width="8" height="8" rx="1.5"/>
-<rect x="1" y="11" width="8" height="8" rx="1.5"/>
-<rect x="11" y="11" width="8" height="8" rx="1.5"/>
-</svg>
+{{$:/plugins/rimir/appify/icon/fab-menu}}
 </$button>
 </div>
 {{$:/plugins/rimir/appify/ui/llm-chat-panel}}

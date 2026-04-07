@@ -53,7 +53,7 @@ This is the activity log panel. In a real app, this would show a timeline of cha
 
 <%else%>
 
-<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: <<colour muted-foreground>>;">
 <em>Select a task from the sidebar</em>
 </div>
 

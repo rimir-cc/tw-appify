@@ -3,11 +3,11 @@ subtitle: Channel Editor
 footer: <$button message="tm-close-tiddler">Close</$button>
 type: text/vnd.tiddlywiki
 
-\define channel-state() $:/temp/rimir/appify/channel-editor/$(app)$
-\define new-channel-input() $(channel-state)$/new-name
-\define new-default-input() $(channel-state)$/new-default
-\define rename-input() $(channel-state)$/rename/$(ch)$
-\define default-input() $(channel-state)$/default/$(ch)$
+\function channel-state() [<app>addprefix[$:/temp/rimir/appify/channel-editor/]]
+\function new-channel-input() [function[channel-state]addsuffix[/new-name]]
+\function new-default-input() [function[channel-state]addsuffix[/new-default]]
+\function rename-input() [function[channel-state]addsuffix[/rename/]addsuffix<ch>]
+\function default-input() [function[channel-state]addsuffix[/default/]addsuffix<ch>]
 
 <!-- app variable is set by tm-modal params -->
 

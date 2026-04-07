@@ -6,14 +6,14 @@ type: text/vnd.tiddlywiki
 
 <div style="display: flex; align-items: center; gap: 12px; padding: 4px 0;">
 <strong style="font-size: 1.1em;">Project Manager</strong>
-<span style="color: #999;">|</span>
+<span style="color: <<colour muted-foreground>>;">|</span>
 <%if [statewrap-get[project]!is[blank]]%>
 <$text text={{{[statewrap-get[project]]}}}/>
 <%if [statewrap-get[task]!is[blank]]%>
-<span style="color: #999;">&rarr;</span>
+<span style="color: <<colour muted-foreground>>;">&rarr;</span>
 <$text text={{{[statewrap-get[task]]}}}/>
 <%endif%>
 <%else%>
-<em style="color: #999;">Select a project</em>
+<em style="color: <<colour muted-foreground>>;">Select a project</em>
 <%endif%>
 </div>

@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|0.2.18 |2026-04-07 |Cleanup: replace \define with \procedure/\function, extract inline SVGs to icon tiddlers, move demo-nav styles to stylesheet, replace hardcoded colors with palette variables |
 |v0.2.17 |2026-04-03 |Include AdvancedPerformance info-bar in app layout (safe no-op if plugin not installed) |
 |v0.2.16 |2026-04-02 |FAB sets all `rimir/appify/*` help contexts dynamically instead of just top-level `rimir/appify` |
 |v0.2.15 |2026-03-30 |Add `defaultContext` attribute to LLM chat panel (`rimir/appify rimir/typed tw-gotchas shortcuts`) |
