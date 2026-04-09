@@ -26,7 +26,7 @@ type: text/vnd.tiddlywiki
     flex: 1;
     min-height: 0;
     width: 100%;
-    background: <<colour tiddler-border>>;
+    background: #ccc;
     gap: 1px;
 }
 
@@ -718,7 +718,20 @@ type: text/vnd.tiddlywiki
     padding: 12px;
 }
 
-/* Stacked views: pane with tabs needs flex column for proper fill */
+/* Stacked views: slot/pane with tabs needs flex column and no padding */
+.appify-slot:has(.appify-tab-bar) {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Collapse parasitic <p> from block parser wrapping $set widgets before tab bar */
+.appify-slot:has(.appify-tab-bar) > p,
+.appify-split-pane:has(.appify-tab-bar) > p {
+    margin: 0;
+    padding: 0;
+}
+
 .appify-split-pane:has(.appify-tab-bar) {
     display: flex;
     flex-direction: column;
