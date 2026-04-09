@@ -725,11 +725,16 @@ type: text/vnd.tiddlywiki
     padding: 0;
 }
 
-/* Collapse parasitic <p> from block parser wrapping $set widgets before tab bar */
+/* Parasitic <p> from block parser wraps $set + tab bar + tab content.
+   Make it a flex column so tab bar stays fixed and content scrolls. */
 .appify-slot:has(.appify-tab-bar) > p,
 .appify-split-pane:has(.appify-tab-bar) > p {
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 .appify-split-pane:has(.appify-tab-bar) {

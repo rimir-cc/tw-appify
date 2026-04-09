@@ -113,4 +113,62 @@ Do NOT use:
 
 The `[subfilter<>]` operator evaluates the filter with the real widget context, preserving the full parent chain so `statewrap-get` can find the statewrap wrapper.
 
+Widget attributes cannot concatenate variable refs with literals. `$tiddler=<<var>>:suffix` does NOT work — TW only sees the `<<var>>` part.
+
+Use a filter attribute instead:
+```
+<$action-setfield $tiddler={{{ [<myState>addsuffix[:last-click]] }}} text=""/>
+```
+
+Or pre-compute with `<$let>`:
+```
+<$let fullTitle={{{ [<myState>addsuffix[:last-click]] }}}>
+<$action-setfield $tiddler=<<fullTitle>> text=""/>
+</$let>
+```
+
+`statewrap-get` returns the OLD value during the same action sequence. After `<$action-statewrap-set channel="x" value="new"/>`, calling `statewrap-get[x]` in a subsequent action still returns the pre-set value. The widget variable context only updates on the next refresh cycle.
+
+Do NOT read back a channel you just wrote:
+```
+<$action-statewrap-set channel="expanded" value=<<item>>/>
+<!-- WRONG: statewrap-get still returns the old value here -->
+<$action-setfield $tiddler=<<state>> text={{{ [statewrap-get[expanded]match<item>then[yes]] }}}/>
+```
+
+Instead, compute the dependent value from source data directly:
+```
+<$action-statewrap-set channel="expanded" value=<<item>>/>
+<$action-setfield $tiddler=<<state>> text={{{ [all[tiddlers]rrt.type[note]field:parent<item>first[]] }}}/>
+```
+
+`$macrocall` renders procedure output in inline mode. Block-level HTML (`<div>`, `<table>`, `<h*>`) inside a `\procedure` gets swallowed when called via `$macrocall`.
+
+Use `<$transclude $variable="proc-name" $mode="block"/>` instead:
+```
+<!-- WRONG — block content invisible -->
+<$macrocall $name="my-view" entity=<<item>>/>
+
+<!-- RIGHT — block content renders correctly -->
+<$transclude $variable="my-view" entity=<<item>> $mode="block"/>
+```
+
+Action widgets inside `<%else%>` branches are NOT reachable by `Widget.invokeActions()`. The `<%if%>` compiles to a ListWidget that stores the else branch in `elseChildren`, which `invokeActions` does not traverse.
+
+Use `<$list>` with `emptyMessage` for action widgets instead:
+```
+<!-- WRONG — actions in <%else%> never fire -->
+<%if [<result>!is[blank]] %>
+  <$action-setfield .../>
+<%else%>
+  <$action-setfield .../> <!-- unreachable! -->
+<%endif%>
+
+<!-- RIGHT — emptyMessage actions are reachable -->
+<$list filter="[<result>!is[blank]]" variable="_">
+  <$action-setfield .../>
+</$list>
+```
+Note: Read-only rendering (capturing `textContent`) works fine with `<%if%>` — the bug only affects action invocation.
+
 See also: llm_help("appify/channels") — how channels work, llm_help("appify/splits") — splitting a slot into sub-panes
