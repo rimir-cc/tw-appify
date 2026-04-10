@@ -755,8 +755,10 @@ AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTit
 		for(var t2 = 0; t2 < views.length; t2++) {
 			var tv2 = views[t2];
 			var tLabel2 = tv2.label || (tv2.view ? tv2.view.split("/").pop() : "Tab " + t2);
+			var badgeTiddler = tv2["badge-tiddler"] || "";
 			var tabBtn = '<$transclude $tiddler="$:/plugins/rimir/appify/ui/tab-button" setTiddler="' + esc(tabStateTiddler) +
-				'" value="' + esc(tv2.view || "") + '" activeValue=<<__effectiveTab__>> label="' + esc(tLabel2) + '"/>';
+				'" value="' + esc(tv2.view || "") + '" activeValue=<<__effectiveTab__>> label="' + esc(tLabel2) + '"' +
+				(badgeTiddler ? ' badgeTiddler="' + esc(badgeTiddler) + '"' : '') + '/>';
 			if(tv2.condition) {
 				wt += '<$list filter="' + esc(tv2.condition) + '">' + tabBtn + '</$list>';
 			} else {

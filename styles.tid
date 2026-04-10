@@ -713,6 +713,11 @@ type: text/vnd.tiddlywiki
     font-weight: bold;
 }
 
+.appify-tab-badge {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
 .appify-tab-content {
     flex: 1;
     overflow: auto;

@@ -1,12 +1,12 @@
 title: $:/plugins/rimir/appify/ui/tab-button
 type: text/vnd.tiddlywiki
 
-\parameters(setTiddler, value, activeValue, label)
+\parameters(setTiddler, value, activeValue, label, badgeTiddler)
 <$button class="appify-tab-btn" set=<<setTiddler>> setTo=<<value>>>
 <$list filter="[<activeValue>match<value>]" variable="__x__">
-<span class="appify-tab-active"><<label>></span>
+<span class="appify-tab-active"><<label>><%if [<badgeTiddler>!is[blank]] %><span class="appify-tab-badge"> (<$transclude $tiddler=<<badgeTiddler>>/>)</span><%endif%></span>
 </$list>
 <$list filter="[<activeValue>!match<value>]" variable="__x__">
-<<label>>
+<<label>><%if [<badgeTiddler>!is[blank]] %><span class="appify-tab-badge"> (<$transclude $tiddler=<<badgeTiddler>>/>)</span><%endif%>
 </$list>
 </$button>
