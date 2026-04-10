@@ -852,6 +852,44 @@ type: text/vnd.tiddlywiki
     font-weight: bold;
 }
 
+/* === Navigation breadcrumb === */
+
+.appify-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 12px;
+    background: <<colour code-background>>;
+    font-size: 12px;
+    border-bottom: 1px solid <<colour tiddler-border>>;
+    flex-shrink: 0;
+}
+
+.appify-breadcrumb-btn {
+    color: <<colour primary>>;
+    padding: 1px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.appify-breadcrumb-btn:hover {
+    background: <<colour tiddler-info-background>>;
+    text-decoration: underline;
+}
+
+.appify-breadcrumb-sep {
+    color: <<colour muted-foreground>>;
+    font-size: 12px;
+    padding: 0 1px;
+}
+
+/* Hide trailing separator */
+.appify-breadcrumb-sep:last-child {
+    display: none;
+}
+
 /* === LLM Chat FAB button === */
 
 .appify-llm-fab-btn {

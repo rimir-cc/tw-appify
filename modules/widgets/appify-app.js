@@ -558,7 +558,7 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 
 	// Check for stacked views
 	if(node && node.views && node.views.length > 0) {
-		return this.buildStackedContent(node.views, editMode, appTitle, address);
+		return this.buildStackedContent(node.views, editMode, appTitle, address, node["tab-state"]);
 	}
 
 	if(editMode) {
@@ -631,8 +631,8 @@ AppifyAppWidget.prototype.buildLeafContent = function(viewTiddler, editMode, app
 
 // Build content for a leaf with stacked views (tab groups).
 // views: array of {view, label, condition}
-AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTitle, address) {
-	var tabStateTiddler = "$:/state/rimir/appify/tab/" + appTitle + "/" + address;
+AppifyAppWidget.prototype.buildStackedContent = function(views, editMode, appTitle, address, tabStateOverride) {
+	var tabStateTiddler = tabStateOverride || ("$:/state/rimir/appify/tab/" + appTitle + "/" + address);
 	var defaultView = views[0].view || "";
 	var wt = "";
 

@@ -1,0 +1,16 @@
+title: $:/plugins/rimir/appify/ui/nav-breadcrumb
+type: text/vnd.tiddlywiki
+
+\parameters (historyTiddler)
+
+<$list filter="[<historyTiddler>get[text]jsonindexes[]] +[first[]]" variable="_check">
+<div class="appify-breadcrumb">
+<$list filter="[<historyTiddler>get[text]jsonindexes[]]" variable="idx">
+<$button class="appify-breadcrumb-btn tc-btn-invisible">
+<$action-statewrap-back index=<<idx>>/>
+<$text text={{{ [<historyTiddler>get[text]jsonget<idx>,[label]] }}}/>
+</$button>
+<span class="appify-breadcrumb-sep">&rsaquo;</span>
+</$list>
+</div>
+</$list>

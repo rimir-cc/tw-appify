@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|0.2.21 |2026-04-10 |Navigation breadcrumb component (`nav-breadcrumb.tid`), `tab-state` override in splits config for statewrap-driven tab selection, breadcrumb CSS |
 |0.2.20 |2026-04-10 |Conditional slot visibility: hide grid slots when all stacked views' conditions fail, rebuild grid template to collapse hidden columns; visible grid gap separator lines between views; fix parasitic `<p>` flex layout for stacked views; add wikitext gotchas to llm-help views page |
 |0.2.19 |2026-04-07 |Fix parseRulesFromBody to recursively walk parse tree (was missing rules inside p-wrapped nodes), add 102 Jasmine unit tests for all action widgets, extend Playwright e2e tests |
 |0.2.18 |2026-04-07 |Cleanup: replace \define with \procedure/\function, extract inline SVGs to icon tiddlers, move demo-nav styles to stylesheet, replace hardcoded colors with palette variables |
