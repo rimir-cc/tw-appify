@@ -125,6 +125,7 @@ AppifyAppWidget.prototype.execute = function() {
 
 	// Build slot nodes with recursive split support
 	var slotChildren = [];
+	var hiddenSlots = {};
 	for(var j = 0; j < slots.length; j++) {
 		var slotName = slots[j];
 		var defaultView = fields["appify-view-" + slotName] || "";
@@ -139,14 +140,102 @@ AppifyAppWidget.prototype.execute = function() {
 			slotClass += " appify-slot-edit";
 		}
 
-		slotChildren.push({
+		var slotNode = {
 			type: "element", tag: "div",
 			attributes: {
 				"class": { type: "string", value: slotClass },
 				"style": { type: "string", value: "grid-area: " + slotName + ";" }
 			},
 			children: slotContent
+		};
+
+		// For non-primary slots: if all views are conditional, wrap in $list
+		// so the slot div is removed when no view is visible.
+		// Skip the last slot (primary content) — it should always render.
+		// For non-primary slots: if all views are conditional, evaluate
+		// the combined condition NOW and skip the slot entirely if empty
+		var isLastSlot = (j === slots.length - 1);
+		var paneCondition = !editMode && !isLastSlot && splitNode && !hasSplit ? this.derivePaneCondition(splitNode) : null;
+		if(paneCondition) {
+			this.conditionalSlots = true;
+			// Ensure statewrap defaults are written before evaluating conditions
+			var statePrefix = "$:/state/rimir/statewrap/" + appTitle + "/";
+			for(var ci = 0; ci < channelNames.length; ci++) {
+				var ch = channelNames[ci];
+				var stateTid = statePrefix + ch;
+				if(!this.wiki.tiddlerExists(stateTid)) {
+					var defaultVal = fields["appify-default-" + ch] || "";
+					if(defaultVal) {
+						this.wiki.addTiddler({title: stateTid, text: defaultVal});
+					}
+				}
+			}
+			var visResult = this.wiki.filterTiddlers(paneCondition, this);
+			if(!visResult || visResult.length === 0) {
+				hiddenSlots[slotName] = true;
+				continue;
+			}
+		}
+		slotChildren.push(slotNode);
+	}
+
+	// Rebuild grid template if any slots are hidden — replace hidden slot
+	// names with an adjacent visible slot in the same row (merging cells)
+	if(Object.keys(hiddenSlots).length > 0 && gridAreas) {
+		var areaRows = gridAreas.match(/"[^"]+"/g) || [];
+		var parsedRows = areaRows.map(function(row) {
+			return row.replace(/"/g, "").trim().split(/\s+/);
 		});
+
+		// Replace hidden slots with their nearest visible neighbor
+		for(var r = 0; r < parsedRows.length; r++) {
+			for(var c = 0; c < parsedRows[r].length; c++) {
+				if(hiddenSlots[parsedRows[r][c]]) {
+					// Find nearest visible neighbor in this row
+					var replacement = null;
+					for(var d = 1; d < parsedRows[r].length; d++) {
+						if(c + d < parsedRows[r].length && !hiddenSlots[parsedRows[r][c + d]] && parsedRows[r][c + d] !== ".") {
+							replacement = parsedRows[r][c + d]; break;
+						}
+						if(c - d >= 0 && !hiddenSlots[parsedRows[r][c - d]] && parsedRows[r][c - d] !== ".") {
+							replacement = parsedRows[r][c - d]; break;
+						}
+					}
+					parsedRows[r][c] = replacement || ".";
+				}
+			}
+		}
+
+		// Check if any column is now entirely the same as its neighbor — collapse it
+		var colCount2 = parsedRows[0] ? parsedRows[0].length : 0;
+		var keepCol = [];
+		for(var c2 = 0; c2 < colCount2; c2++) {
+			if(c2 === 0) { keepCol.push(true); continue; }
+			var sameAsPrev = true;
+			for(var r2 = 0; r2 < parsedRows.length; r2++) {
+				if(parsedRows[r2][c2] !== parsedRows[r2][c2 - 1]) {
+					sameAsPrev = false; break;
+				}
+			}
+			keepCol.push(!sameAsPrev);
+		}
+
+		var newAreaRows = parsedRows.map(function() { return []; });
+		var keptCount = 0;
+		for(var c3 = 0; c3 < colCount2; c3++) {
+			if(keepCol[c3]) {
+				keptCount++;
+				for(var r3 = 0; r3 < parsedRows.length; r3++) {
+					newAreaRows[r3].push(parsedRows[r3][c3]);
+				}
+			}
+		}
+
+		gridAreas = newAreaRows.map(function(row) { return '"' + row.join(" ") + '"'; }).join(" ");
+		// Use 1fr for each remaining column
+		var frCols = [];
+		for(var f = 0; f < keptCount; f++) frCols.push("1fr");
+		gridColumns = frCols.join(" ");
 	}
 
 	// Debug bar (edit mode only)
@@ -721,6 +810,16 @@ AppifyAppWidget.prototype.refresh = function(changedTiddlers) {
 	if(this.splitsConfigTitle && changedTiddlers[this.splitsConfigTitle]) {
 		this.refreshSelf();
 		return true;
+	}
+	// Re-render when statewrap state tiddlers change (needed for conditional slot visibility)
+	if(this.appTitle && this.conditionalSlots) {
+		var statePrefix = "$:/state/rimir/statewrap/" + this.appTitle + "/";
+		for(var ct in changedTiddlers) {
+			if(ct.indexOf(statePrefix) === 0) {
+				this.refreshSelf();
+				return true;
+			}
+		}
 	}
 	return this.refreshChildren(changedTiddlers);
 };
