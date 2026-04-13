@@ -158,6 +158,8 @@ AppifyAppWidget.prototype.execute = function() {
 		var paneCondition = !editMode && !isLastSlot && splitNode && !hasSplit ? this.derivePaneCondition(splitNode) : null;
 		if(paneCondition) {
 			this.conditionalSlots = true;
+			if(!this.conditionChannels) this.conditionChannels = {};
+			this.collectChannelRefs(paneCondition, this.conditionChannels);
 			// Ensure statewrap defaults are written before evaluating conditions
 			var statePrefix = "$:/state/rimir/statewrap/" + appTitle + "/";
 			for(var ci = 0; ci < channelNames.length; ci++) {
@@ -813,17 +815,31 @@ AppifyAppWidget.prototype.refresh = function(changedTiddlers) {
 		this.refreshSelf();
 		return true;
 	}
-	// Re-render when statewrap state tiddlers change (needed for conditional slot visibility)
-	if(this.appTitle && this.conditionalSlots) {
+	// Re-render when state tiddlers for channels referenced in slot/pane conditions change
+	if(this.appTitle && this.conditionalSlots && this.conditionChannels) {
 		var statePrefix = "$:/state/rimir/statewrap/" + this.appTitle + "/";
 		for(var ct in changedTiddlers) {
 			if(ct.indexOf(statePrefix) === 0) {
-				this.refreshSelf();
-				return true;
+				var chName = ct.substring(statePrefix.length);
+				if(this.conditionChannels[chName]) {
+					this.refreshSelf();
+					return true;
+				}
 			}
 		}
 	}
 	return this.refreshChildren(changedTiddlers);
+};
+
+// Extract channel names referenced in a condition filter string.
+// Recognises statewrap-get[<channel>] and {<path>/<channel>} textrefs.
+AppifyAppWidget.prototype.collectChannelRefs = function(condition, into) {
+	if(!condition) return;
+	var re1 = /statewrap-get\[([^\]]+)\]/g;
+	var re2 = /\{[^}]*\/([a-zA-Z0-9_-]+)\}/g;
+	var m;
+	while((m = re1.exec(condition)) !== null) into[m[1]] = true;
+	while((m = re2.exec(condition)) !== null) into[m[1]] = true;
 };
 
 exports["appify-app"] = AppifyAppWidget;

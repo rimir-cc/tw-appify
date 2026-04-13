@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|0.2.23 |2026-04-13 |`appify-app` refresh fix: only `refreshSelf` on changes to channels actually referenced in slot/pane conditions (was: any state-tiddler change). New helper `collectChannelRefs` parses `statewrap-get[X]` and `{...path/X}` references during execute. Stops live-bound inputs (e.g. search box) from being remounted/refocused on every keystroke when the app has conditional slots |
 |0.2.22 |2026-04-10 |Tab badge support: `badge-tiddler` in splits config, transcluded by tab-button with `.appify-tab-badge` styling |
 |0.2.21 |2026-04-10 |Navigation breadcrumb component (`nav-breadcrumb.tid`), `tab-state` override in splits config for statewrap-driven tab selection, breadcrumb CSS |
 |0.2.20 |2026-04-10 |Conditional slot visibility: hide grid slots when all stacked views' conditions fail, rebuild grid template to collapse hidden columns; visible grid gap separator lines between views; fix parasitic `<p>` flex layout for stacked views; add wikitext gotchas to llm-help views page |
