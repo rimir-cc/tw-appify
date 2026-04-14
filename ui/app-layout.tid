@@ -2,4 +2,4 @@ title: $:/plugins/rimir/appify/ui/app-layout
 type: text/vnd.tiddlywiki
 
 \whitespace trim
-<div class="appify-overlay"><$appify-app tiddler={{{[[$:/state/rimir/appify/active-app]get[text]]}}}/></div><$transclude tiddler="$:/plugins/rimir/appify/ui/fab"/><$transclude tiddler="$:/plugins/EvidentlyCube/AdvancedPerformance/ui"/>
+<div class="appify-overlay"><$appify-app tiddler={{{[[$:/state/rimir/appify/active-app]get[text]]}}}/></div><$transclude tiddler="$:/plugins/rimir/appify/ui/fab"/><$transclude tiddler="$:/plugins/EvidentlyCube/AdvancedPerformance/ui"/><$list filter="[[$:/plugins/rimir/file-upload/upload-overlay]is[shadow]]" variable="ignore">{{$:/plugins/rimir/file-upload/upload-overlay}}</$list><$list filter="[[$:/plugins/rimir/file-pipeline/pipeline-select]is[shadow]]" variable="ignore">{{$:/plugins/rimir/file-pipeline/pipeline-select}}</$list><$list filter="[[$:/plugins/rimir/file-pipeline/pipeline-interactive]is[shadow]]" variable="ignore">{{$:/plugins/rimir/file-pipeline/pipeline-interactive}}</$list>
