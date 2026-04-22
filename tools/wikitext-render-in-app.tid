@@ -1,0 +1,11 @@
+title: $:/plugins/rimir/appify/tools/wikitext-render-in-app
+tags: $:/tags/rimir/llm-connect/tool
+tool-name: wikitext_render_in_app
+tool-description: Render a wikitext snippet inside the active appify app's <$statewrap> scope. Use this (instead of wikitext_render) to preview what a view tiddler displays in-place, because views typically read channel values via statewrap-get which only works inside that scope. Pass a transclusion like {{$:/path/to/view}} or inline wikitext. Requires an appify app to be active (reads $:/state/rimir/appify/active-app).
+tool-schema: {"type":"object","properties":{"wikitext":{"type":"string","description":"TiddlyWiki wikitext to render inside the active app's statewrap scope (e.g. {{$:/plugins/rimir/orga-apps/views/dashboard}} to render the dashboard view with the current section/entity channel values)"}},"required":["wikitext"]}
+tool-mode: read
+tool-model-tier: cheap
+tool-category: appify
+type: text/vnd.tiddlywiki
+
+<%if [<wikitext>match[]] %>Error: Missing 'wikitext' parameter<%else%><$let appTitle={{{[[$:/state/rimir/appify/active-app]get[text]]}}}><%if [<appTitle>is[blank]] %>Error: No active appify app (check $:/state/rimir/appify/active-app)<%else%><$let channels={{{[<appTitle>get[appify-channels]]}}}><$statewrap instid=<<appTitle>> channels=<<channels>>><$wikify name="__rendered__" text=<<wikitext>>><$text text=<<__rendered__>>/></$wikify></$statewrap></$let><%endif%></$let><%endif%>

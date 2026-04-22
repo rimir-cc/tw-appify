@@ -39,4 +39,9 @@ What you can modify (on cloned apps):
 - **App tiddler fields**: add channels, change defaults, change view bindings
 - **App tiddler body**: modify reactive rules
 
+Inspection tools:
+
+- **wikitext_render_in_app(wikitext)**: render wikitext inside the active app's `<$statewrap>` scope — use it to preview what a view tiddler actually displays with current channel values (e.g. `wikitext_render_in_app(wikitext="{{ViewTitle}}")`). Plain `wikitext_render` renders detached from statewrap and `statewrap-get` returns empty there.
+- **[<appTitle>statewrap-lookup[channel]]**: read a channel's current text without needing a parent `<$statewrap>` — useful inside `\function` bodies or filter expressions that run outside the app's widget tree. Equivalent to reading `$:/state/rimir/statewrap/<appTitle>/<channel>` directly.
+
 Navigate deeper: llm_help("appify/channels"), llm_help("appify/views"), llm_help("appify/layouts"), llm_help("appify/splits"), llm_help("appify/rules"), llm_help("appify/proportions")
