@@ -3,9 +3,16 @@
     "description": "App-like layouts with view switching, statewrap integration, and a floating app launcher",
     "name": "appify",
     "author": "rimir",
-    "version": "0.2.25",
+    "version": "0.2.26",
     "core-version": ">=5.3.0",
     "source": "https://github.com/rimir-cc/tw-appify",
     "plugin-type": "plugin",
-    "list": "readme documentation settings showcase changelog license"
+    "list": "readme documentation settings showcase changelog license",
+    "dependents": "$:/plugins/rimir/theme",
+    "soft-dependents": [
+        "$:/plugins/rimir/doc-template",
+        "$:/plugins/rimir/llm-connect",
+        "$:/plugins/rimir/file-upload",
+        "$:/plugins/rimir/file-pipeline"
+    ]
 }

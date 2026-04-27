@@ -6,6 +6,7 @@ type: text/vnd.tiddlywiki
 ! Changelog
 
 |!Version |!Date |!Changes |
+|0.2.26 |2026-04-27 |Declare hard dependent `theme` and soft-dependents `doc-template`, `llm-connect`, `file-upload`, `file-pipeline` in plugin.info |
 |0.2.25 |2026-04-22 |In-app LLM chat improvements: (1) system-prompt template now reads splits config JSON at `$:/config/rimir/appify/splits/<app>` in addition to `appify-view-<slot>` fields, so sidebar/main bindings for apps that use splits (e.g. orga) are no longer reported as empty; (2) channel values show effective=state-text with fallback to `appify-default-<ch>` when the state tiddler is missing; (3) new `wikitext_render_in_app` llm-connect tool (shipped from `tools/`, tagged `$:/tags/rimir/llm-connect/tool`) renders wikitext inside the active app's `<$statewrap>` scope so `statewrap-get` resolves — use it to preview views in-place instead of the blind `wikitext_render`. Docs and llm-help overview updated |
 |0.2.24 |2026-04-14 |Soft-include file-pipeline select/interactive panels and file-upload overlay in app-layout (renders when plugins installed) |
 |0.2.23 |2026-04-13 |`appify-app` refresh fix: only `refreshSelf` on changes to channels actually referenced in slot/pane conditions (was: any state-tiddler change). New helper `collectChannelRefs` parses `statewrap-get[X]` and `{...path/X}` references during execute. Stops live-bound inputs (e.g. search box) from being remounted/refocused on every keystroke when the app has conditional slots |
