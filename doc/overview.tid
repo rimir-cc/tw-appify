@@ -29,6 +29,8 @@ Transforms TiddlyWiki into an app platform. Define full-viewport applications wi
 * Layout switching with automatic config persistence (view bindings, splits, proportions)
 * Draggable grid borders with grid-area-aware handle positioning
 * LLM integration: in-app chat panel with context-scoped help pages (auto-activates `rimir/appify` help context on app switch); system prompt auto-injects the active app's layout, channels (effective values), and view bindings including conditional splits; ships a `wikitext_render_in_app` llm-connect tool that renders wikitext inside the active app's `<$statewrap>` scope so `statewrap-get` resolves
+* AutoComplete-aware: soft-includes `EvidentlyCube/AutoComplete`'s popup window in the app layout so `[[`-trigger autocomplete works inside any appify view's textareas (the popup widget is `$:/tags/PageTemplate`-tagged and would otherwise be replaced by the app grid)
+* Optional history breadcrumb cap via `<$transclude $tiddler="…/ui/nav-breadcrumb" maxEntries="N"/>` to limit the rendered trail to the most recent N entries
 * Extensible: register apps by tagging tiddlers, add custom layout templates
 
 !! Prerequisites
