@@ -1,0 +1,8 @@
+tags: $:/tags/rimir/appify/layout
+caption: Top Bar + Main
+appify-slots: topbar main
+appify-grid-areas: "topbar" "main"
+appify-grid-columns: 1fr
+appify-grid-rows: auto 1fr
+title: $:/plugins/rimir/appify/layouts/topbar-main
+type: text/vnd.tiddlywiki
